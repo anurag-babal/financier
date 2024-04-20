@@ -1,0 +1,23 @@
+---
+- hosts: all
+  vars:
+    image: "transaction-service:latest"
+  tasks:
+    - name: Pull the image
+      docker_image:
+        name: "{{ image }}"
+        source: pull
+        force: yes
+        state: present
+    - name: Remove the container
+      docker_container:
+        name: "transaction-service"
+        state: absent
+    - name: Run the container
+      docker_container:
+        name: "transaction-service"
+        image: "{{ image }}"
+        state: started
+        ports:
+          - "8080:8080"
+        restart_policy: always

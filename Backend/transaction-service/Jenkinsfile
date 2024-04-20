@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/anuragbabal/transaction-service.git'
+            }
+        }
+        stage('Test') {
+            steps {
+                mvn clean test
+            }
+        }
+        stage('Build') {
+            steps {
+                mvn clean package
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                docker.build('transaction-service', '.')
+            }
+        }
+        stage('Docker Tag') {
+            steps {
+                docker.image('transaction-service').tag('latest')
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                docker.withRegistry('https://registry.hub.docker.com', 'DockerHubCred') {
+                    docker.image('transaction-service').push('latest')
+                }
+            }
+        }
+        stage('Ansible Deploy') {
+            steps {
+                ansiblePlaybook credentialsId: 'ansible-cred', inventory: 'hosts', playbook: 'deploy.yml'
+            }
+        }
+    }
+}

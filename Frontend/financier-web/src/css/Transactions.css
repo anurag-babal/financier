@@ -1,0 +1,27 @@
+.trans-main {
+    width: 60vw;
+    margin: auto;
+    /* background-color: aqua; */
+    /* background-color: #fff9ef; */
+}
+
+.trans-header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0px;
+    background-color: #fff9ef;
+    border: 1px solid black;
+}
+
+.trans-row {
+    display: flex;
+    background-color: #fff9ef;
+    justify-content: space-around;
+    align-items: center;
+    margin: 10px 0px;
+    padding: 10px 0px;
+    box-shadow: 0px 0px 5px #333;
+    border: 1px solid black;
+}
+

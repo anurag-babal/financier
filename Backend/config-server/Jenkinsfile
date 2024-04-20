@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+    environment {
+        imageName = 'config-server'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git branch: 'master', url: 'https://github.com/anurag-babal/config-server.git'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn clean test'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                script {
+                    docker.build(imageName, '.')
+                }
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                script {
+                    docker.withRegistry('', 'DockerHubCred') {
+                        sh 'docker tag ${imageName} anuragbabal/${imageName}:latest'
+                        sh 'docker push anuragbabal/${imageName}:latest'
+                    }
+                }
+            }
+        }
+        stage('Ansible Deploy') {
+            steps {
+                script {
+                    ansiblePlaybook inventory: 'hosts', playbook: 'deploy.yaml'
+                }
+            }
+        }
+    }
+}

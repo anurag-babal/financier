@@ -1,0 +1,111 @@
+services:
+  rabbit:
+    image: "rabbitmq:3.13-management"
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+#      test: [ "CMD", "rabbitmqctl", "status" ]
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    extends:
+      file: common-config.yaml
+      service: network-deploy-service
+
+  configserver:
+    image: "anuragbabal/configserver:latest"
+    container_name: config-server
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8071/actuator/health" ]
+      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    environment:
+      - SPRING_APPLICATION_NAME=configserver
+    extends:
+      file: common-config.yaml
+      service: microservice-base-config
+
+  users:
+    image: "anuragbabal/users:latest"
+    container_name: users-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_APPLICATION_NAME=users
+      - SPRING_DATASOURCE_URL=jdbc:mysql://users-db:3306/userdb
+    depends_on:
+      configserver:
+        condition: service_completed_successfully
+      usersdb:
+        condition: service_healthy
+    extends:
+      file: common-config.yaml
+      service: microservice-configserver-config
+
+  transactions:
+    image: "anuragbabal/transactions:latest"
+    container_name: transactions-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_APPLICATION_NAME=transactions
+      - SPRING_DATASOURCE_URL=jdbc:mysql://transactions-db:3307/transactionsdb
+    depends_on:
+      transactionsdb:
+        condition: service_healthy
+    extends:
+      file: common-config.yaml
+      service: microservice-configserver-config
+
+  usersdb:
+    image: "mysql"
+    container_name: users-db
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: userdb
+    extends:
+      file: common-config.yaml
+      service: network-deploy-service
+
+  transactionsdb:
+    image: "mysql"
+    container_name: transactions-db
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: transactionsdb
+    extends:
+      file: common-config.yaml
+      service: network-deploy-service
+
+networks:
+  backend:
+    driver: bridge
