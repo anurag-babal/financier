@@ -1,3 +1,8 @@
-FROM openjdk:17-jdk-slim
-COPY target/*.jar config-server.jar
-ENTRYPOINT ["java","-jar","/config-server.jar"]
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+COPY /target/*.jar app.jar
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

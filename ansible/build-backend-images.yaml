@@ -25,11 +25,12 @@
   vars:
     microservices:
       - auth-service
+      - user-service
       - config-server
-      - discovery-server
-      - gateway-server
       - report-service
+      - gateway-server
       - expense-service
+      - discovery-server
       - transaction-service
     microservices_dir: backend # Directory where microservices are located
     push_to_docker_hub: false  # Set to true if you want to push images to Docker Hub

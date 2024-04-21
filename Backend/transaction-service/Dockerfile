@@ -1,3 +1,8 @@
-FROM openjdk:17-jdk-slim
-COPY target/transaction-service-0.0.1-SNAPSHOT.jar transaction-service.jar
-ENTRYPOINT ["java","-jar","/transaction-service.jar"]
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+COPY /target/*.jar app.jar
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
