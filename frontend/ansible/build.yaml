@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Install frontend dependencies
+      command: npm install
+      working_dir: "{{ frontend_dir }}"
+
+    - name: Build frontend application
+      command: npm run build
+      working_dir: "{{ frontend_dir }}"
+
+  vars:
+    frontend_dir: frontend

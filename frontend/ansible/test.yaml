@@ -1,10 +1,10 @@
 ---
 - hosts: localhost
-  become: true  # Optional, depends on your build setup
+  become: true
   tasks:
     - name: Run frontend tests (Replace with your actual command)
-      command: npm test  # Adjust based on your testing framework (e.g., Jest, Mocha)
-      working_dir: "{{ frontend_dir }}/frontend-web"  # Specify path to frontend code
+      command: npm test
+      working_dir: "{{ frontend_dir }}"
       register: frontend_test_result
     - name: Fail task if frontend tests fail
       fail:
@@ -12,5 +12,4 @@
       msg: "Frontend tests failed"
 
   vars:
-    # Assuming your frontend code is in a directory named 'frontend'
     frontend_dir: frontend

@@ -4,15 +4,15 @@
   tasks:
     - name: Build frontend image
       docker_image:
-        name: "{{ docker_username }}/frontend:latest"
+        name: "{{ docker_username }}/financier-react:latest"
         state: present
         build:
-          path: frontend/frontend-web
+          path: frontend
           dockerfile: Dockerfile
     - name: Push image to Docker Hub (optional)
       when: push_to_docker_hub
       docker_hub:
-        name: "{{ docker_username }}/frontend:latest"
+        name: "{{ docker_username }}/financier-react:latest"
         state: present
         username: "{{ docker_username }}"
         password: "{{ docker_password }}"

@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Build Docker image for frontend
+      docker_image:
+        name: anuragbabal/financier-react:latest
+        state: present
+        build:
+          path: "{{ frontend_dir }}"
+          dockerfile: Dockerfile
+
+  vars:
+    frontend_dir: frontend
