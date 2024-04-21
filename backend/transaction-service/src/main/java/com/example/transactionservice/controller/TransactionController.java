@@ -1,7 +1,7 @@
 package com.example.transactionservice.controller;
 
-import com.example.transactionservice.Dto.TransactionCreateRequestDto;
-import com.example.transactionservice.Dto.TransactionResponseDto;
+import com.example.transactionservice.dto.TransactionCreateRequestDto;
+import com.example.transactionservice.dto.TransactionResponseDto;
 import com.example.transactionservice.domain.model.Transaction;
 import com.example.transactionservice.domain.service.TransactionService;
 import com.example.transactionservice.mapper.TransactionMapper;
