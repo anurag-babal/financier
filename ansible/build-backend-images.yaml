@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Build backend microservice images
+      loop: "{{ microservices }}"
+      loop_control:
+        loop_var: microservice
+      tasks:
+        - name: Build image for {{ microservice }}
+          docker_image:
+            name: "{{ docker_username }}/{{ microservice }}:latest"
+            state: present
+            build:
+              path: "{{ microservices_dir }}/{{ microservice }}"
+              dockerfile: Dockerfile
+        - name: Push image to Docker Hub (optional)
+          when: push_to_docker_hub
+          docker_hub:
+            name: "{{ docker_username }}/{{ microservice }}:latest"
+            state: present
+            username: "{{ docker_username }}"
+            password: "{{ docker_password }}"
+
+  vars:
+    microservices:
+      - auth-service
+      - config-server
+      - discovery-server
+      - gateway-server
+      - report-service
+      - expense-service
+      - transaction-service
+    microservices_dir: backend # Directory where microservices are located
+    push_to_docker_hub: false  # Set to true if you want to push images to Docker Hub
+    docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"  # Get username from environment variable
+    docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"  # Get password from environment variable (use vault for better security)

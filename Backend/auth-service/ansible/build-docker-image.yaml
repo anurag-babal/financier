@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Build Docker image for {{ microservice_name }}
+      docker_image:
+        name: "{{ microservice_name }}:latest"
+        state: present
+        build:
+          path: "{{ microservices_dir }}/{{ microservice_name }}"
+          dockerfile: Dockerfile
+
+  vars:
+    microservices_dir: backend  # Replace with the directory containing your microservices if it's different
+    microservice_name: "{{ lookup('env', 'PWD') | basename }}"  # Get microservice name from directory name

@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Build Docker image for frontend
+      docker_image:
+        name: anuragbabal/frontend:latest
+        state: present
+        build:
+          path: "{{ frontend_dir }}/frontend-web" # Specify path to frontend code
+          dockerfile: Dockerfile
+
+  vars:
+    # Assuming your frontend code and Dockerfile are in a directory named 'frontend'
+    frontend_dir: frontend
+    your_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"  # Get username from environment variable

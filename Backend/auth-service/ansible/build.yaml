@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  become: true  # Optional, depends on your Maven setup
+  tasks:
+    - name: Run mvn test for {{ microservice_name }}
+      command: mvn test -f {{ microservices_dir }}/{{ microservice_name }}/pom.xml
+      register: mvn_test_result
+    - name: Fail task if mvn test fails
+      fail:
+        when: mvn_test_result.rc != 0
+      msg: "Maven tests failed for {{ microservice_name }}"
+    - name: Run mvn clean package for {{ microservice_name }}
+      command: mvn clean package -f {{ microservices_dir }}/{{ microservice_name }}/pom.xml
+
+  vars:
+    microservices_dir: backend  # Replace with the directory containing your microservices if it's different
+    microservice_name: "{{ lookup('env', 'PWD') | basename }}"  # Get microservice name from directory name

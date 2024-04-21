@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  become: true  # Optional, depends on your build setup
+  tasks:
+    - name: Install frontend dependencies
+      command: npm install  # Adjust based on your package manager
+      working_dir: "{{ frontend_dir }}/frontend-web"
+
+    - name: Build frontend application (Replace with your actual command)
+      command: npm run build  # Adjust based on your build command
+      working_dir: "{{ frontend_dir }}/frontend-web"
+
+  vars:
+    # Assuming your frontend code is in a directory named 'frontend'
+    frontend_dir: frontend

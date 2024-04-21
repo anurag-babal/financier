@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Configuration ###
-Backend/financier-config/
+backend/financier-config/
