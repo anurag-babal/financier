@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import '../css/Homepage.css'
 import Header from '../components/Header'
 import Overview from '../components/Overview';
@@ -6,6 +6,7 @@ import Expenses from '../components/Expenses';
 import ExpenseForm from "../components/ExpenseForm";
 import Popup from "../components/Popup";
 import {deleteTransaction} from "../services/TransactionService";
+import TransactionContextProvider, {TransactionContext} from "../store/transaction-context";
 
 function Homepage() {
     const data = [
@@ -23,32 +24,39 @@ function Homepage() {
         {label: 'Dec', value: 14000}
     ];
 
+    const { initTransaction } = useContext(TransactionContext);
+
     const [isPopupOpen, setIsPopupOpen] = React.useState(false);
     const handleOpenPopup = () => setIsPopupOpen(true);
-    const handleClosePopup = () => setIsPopupOpen(false);
+    const handleClosePopup = () => {
+        setIsPopupOpen(false);
+        initTransaction();
+    }
 
     return (
         <>
             <Header></Header>
-            <div className='home'>
-                <div className='overview'>
-                    <Overview data={data}></Overview>
+            <TransactionContextProvider>
+                <div className='home'>
+                    <div className='overview'>
+                        <Overview data={data}></Overview>
+                    </div>
+                    <div className='add-btn'>
+                        <button className='add-exp-btn' onClick={handleOpenPopup}>+ Add Expense</button>
+                    </div>
+                    {
+                        isPopupOpen &&
+                        <Popup
+                            title="Add Expense"
+                            onClose={handleClosePopup}
+                            component={<ExpenseForm onClose={handleClosePopup}/>}
+                        />
+                    }
+                    <div className='recent-transactions'>
+                        <Expenses openForm={handleOpenPopup}/>
+                    </div>
                 </div>
-                <div className='add-btn'>
-                    <button className='add-exp-btn' onClick={handleOpenPopup}>+ Add Expense</button>
-                </div>
-                {
-                    isPopupOpen &&
-                    <Popup
-                        title="Add Expense"
-                        onClose={handleClosePopup}
-                        component={<ExpenseForm onClose={handleClosePopup}/>}
-                    />
-                }
-                <div className='recent-transactions'>
-                    <Expenses />
-                </div>
-            </div>
+            </TransactionContextProvider>
         </>
     )
 }

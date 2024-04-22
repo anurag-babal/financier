@@ -1,9 +1,12 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import '../css/Transactions.css'
 import {deleteTransaction, getTransactions} from '../services/TransactionService';
 import {formatDateToIndian} from "../utils/dateFormatter";
+import {TransactionContext} from "../store/transaction-context";
 
-export default function Expenses() {
+export default function Expenses({openForm}) {
+    const { setTransaction } = useContext(TransactionContext);
+
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
@@ -19,7 +22,9 @@ export default function Expenses() {
     }, [isUpdated]);
 
     const handleEdit = (id) => {
-
+        const transaction = transactions.find(t => t.id === id);
+        setTransaction(transaction);
+        openForm();
     };
     const handleDelete = (id) => {
         deleteTransaction(id)
@@ -55,7 +60,8 @@ export default function Expenses() {
                                 <button className='btn btn-primary me-2' onClick={() => handleEdit(transaction.id)}>
                                     Edit
                                 </button>
-                                <button className='btn btn-danger ms-2' onClick={() => handleDelete(transaction.id)}>
+                                <button className='btn btn-danger ms-2'
+                                        onClick={() => handleDelete(transaction.id)}>
                                     Delete
                                 </button>
                             </td>

@@ -1,36 +1,26 @@
-import {useEffect, useId, useState} from "react";
-import {addTransaction} from "../services/TransactionService";
-import {Transaction} from "../model/Transaction";
+import {useEffect, useId, useState, useContext } from "react";
 import {Alert} from "./Alert";
 import {getCategories} from "../services/CategoryService";
+import {TransactionContext} from "../store/transaction-context";
 
-function initTransaction() {
-    // trans.date = new Date().toISOString().split('T')[0];
-    return new Transaction();
-}
+function ExpenseForm({onClose}) {
+    const {transaction, saveTransaction, updateTransaction} = useContext(TransactionContext);
 
-function ExpenseForm({onClose, trans = initTransaction()}) {
-    const [transaction, setTransaction] = useState(trans);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const [errors, setErrors] = useState({});
     const [categories, setCategories] = useState([]);
     const categoryDropDownId = useId();
 
-    function handleChange(inputIdentifier, newValue) {
-        setTransaction(prev => {
-            return {
-                ...prev,
-                [inputIdentifier]: newValue
-            };
-        });
-    }
-
     useEffect(() => {
         getCategories()
             .then(r => setCategories(r))
             .catch(e => setErrors(e));
     }, []);
+
+    const handleChange = (inputIdentifier, newValue) => {
+        updateTransaction(inputIdentifier, newValue);
+    }
 
     function validateForm() {
         const newErrors = {};
@@ -49,14 +39,9 @@ function ExpenseForm({onClose, trans = initTransaction()}) {
         if (validateForm()) {
             setLoading(true);
             setErrors({});
-
-            addTransaction(transaction)
-                .then(r => setData(r))
-                .catch(e => setErrors(e))
-                .finally(() => {
-                    setLoading(false);
-                    onClose();
-                });
+            saveTransaction();
+            setLoading(false)
+            onClose();
         }
     }
 
@@ -69,6 +54,7 @@ function ExpenseForm({onClose, trans = initTransaction()}) {
                         value={transaction.category}
                         onChange={(event) => handleChange('category', event.target.value)}
                 >
+                    <option value={''}>Select Category</option>
                     {categories.map((category) => (
                         <option key={category.id} value={category.name}>
                             {category.name}

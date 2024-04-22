@@ -19,10 +19,13 @@ export async function addTransaction(transaction) {
     try {
         await new Promise(resolve => setTimeout(resolve, 1000));
         // const response = await axios.post(`${apiUrl}/transactions`, transaction);
-        if (!transaction.id) {
-            transaction.id = transactions.length + 1;
+        const index = transactions.findIndex(t => t.id === transaction.id);
+        if (index > -1) {
+            transactions[index] = transaction;
+        } else {
+            transaction.id = transactions.length === 0 ? 1 : transactions[transactions.length - 1].id + 1;
+            transactions.push(transaction);
         }
-        transactions.push(transaction);
         return "Expense added successfully";
     } catch (error) {
         throw error;
