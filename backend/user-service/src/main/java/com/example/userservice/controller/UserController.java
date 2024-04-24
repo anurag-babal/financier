@@ -2,9 +2,7 @@ package com.example.userservice.controller;
 
 import com.example.userservice.domain.model.User;
 import com.example.userservice.domain.service.UserService;
-import com.example.userservice.dto.ResponseDto;
-import com.example.userservice.dto.UserCreateRequestDto;
-import com.example.userservice.dto.UserCreateResponseDto;
+import com.example.userservice.dto.*;
 import com.example.userservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,11 +24,25 @@ public class UserController {
         UserCreateResponseDto userCreateResponseDto = userMapper.mapToUserCreateResponseDto(user);
 
         ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.CREATED)
                 .message("User added successfully")
                 .data(userCreateResponseDto)
                 .build();
 
-        return ResponseEntity.ok().body(responseDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/getUser")
+    public ResponseEntity<ResponseDto> getUser(@RequestBody UserDetailsRequestDto req) {
+        User user = userService.getUser(req.getId());
+        UserDetailsResponseDto response = userMapper.mapToUserDetailsResponseDto(user);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK)
+                .message("Requested User")
+                .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

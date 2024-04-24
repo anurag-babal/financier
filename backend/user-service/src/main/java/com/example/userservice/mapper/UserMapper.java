@@ -1,8 +1,10 @@
 package com.example.userservice.mapper;
 
+import com.example.userservice.data.entities.UserEntity;
 import com.example.userservice.domain.model.User;
 import com.example.userservice.dto.UserCreateRequestDto;
 import com.example.userservice.dto.UserCreateResponseDto;
+import com.example.userservice.dto.UserDetailsResponseDto;
 import com.example.userservice.util.DateFormatter;
 import org.springframework.stereotype.Component;
 
@@ -29,5 +31,17 @@ public class UserMapper {
         userCreateResponseDto.setEmail(user.getEmail());
         userCreateResponseDto.setDateOfBirth(DateFormatter.localDateToString(user.getDateOfBirth()));
         return userCreateResponseDto;
+    }
+
+    public UserDetailsResponseDto mapToUserDetailsResponseDto(User user) {
+        UserDetailsResponseDto userDetailsResponseDto = new UserDetailsResponseDto();
+        userDetailsResponseDto.setId(userDetailsResponseDto.getId());
+        userDetailsResponseDto.setFirstName(userDetailsResponseDto.getFirstName());
+        userDetailsResponseDto.setMiddleName(userDetailsResponseDto.getMiddleName());
+        userDetailsResponseDto.setLastName(userDetailsResponseDto.getLastName());
+        userDetailsResponseDto.setEmail(userDetailsResponseDto.getEmail());
+        userDetailsResponseDto.setPhoneNumber(userDetailsResponseDto.getPhoneNumber());
+        userDetailsResponseDto.setDateOfBirth(userDetailsResponseDto.getDateOfBirth());
+        return userDetailsResponseDto;
     }
 }

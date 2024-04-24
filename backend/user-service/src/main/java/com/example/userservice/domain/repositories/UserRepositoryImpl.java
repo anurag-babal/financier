@@ -3,6 +3,7 @@ package com.example.userservice.domain.repositories;
 import com.example.userservice.data.dao.UserDao;
 import com.example.userservice.data.entities.UserEntity;
 import com.example.userservice.domain.model.User;
+import com.example.userservice.dto.UserDetailsResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -47,4 +48,10 @@ public class UserRepositoryImpl implements UserRepository{
         user.setDateOfBirth(userEntity.getDateOfBirth());
         return user;
     }
+
+    public User getUser(int id) {
+        UserEntity userEnt = userDao.findById(id).orElseThrow(null);
+        return mapToUser(userEnt);
+    }
+
 }
