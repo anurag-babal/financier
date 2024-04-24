@@ -9,4 +9,6 @@ public interface UserRepository {
     public User getUser(int id);
 
     public User updateUser(User user);
+
+    public boolean deleteUser(int id);
 }

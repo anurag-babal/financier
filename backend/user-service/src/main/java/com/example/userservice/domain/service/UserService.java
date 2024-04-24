@@ -17,4 +17,6 @@ public class UserService {
     public User getUser(int id) { return userRepo.getUser(id); }
 
     public User updateUser(User user) { return userRepo.updateUser(user); }
+
+    public boolean deleteUser(int id) { return userRepo.deleteUser(id); }
 }

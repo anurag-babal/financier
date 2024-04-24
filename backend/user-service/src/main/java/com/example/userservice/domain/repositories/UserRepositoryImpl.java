@@ -54,4 +54,10 @@ public class UserRepositoryImpl implements UserRepository{
         return mapToUser(updatedUser);
     }
 
+    public boolean deleteUser(int id) {
+        UserEntity userEnt = userDao.findById(id).orElseThrow(null);
+        userDao.delete(userEnt);
+        return true;
+    }
+
 }

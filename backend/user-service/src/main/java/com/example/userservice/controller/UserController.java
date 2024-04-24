@@ -5,9 +5,7 @@ import com.example.userservice.domain.service.UserService;
 import com.example.userservice.dto.*;
 import com.example.userservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,6 +55,19 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .message("User Updated Successfully")
                 .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteUser/{id}")
+    public ResponseEntity<ResponseDto> deleteUser(@PathVariable int id) {
+        boolean deleted = userService.deleteUser(id);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK)
+                .message("User Deleted Successfully")
+                .data(deleted)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
