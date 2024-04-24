@@ -5,6 +5,7 @@ import com.example.userservice.domain.service.UserService;
 import com.example.userservice.dto.*;
 import com.example.userservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +18,20 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @PostMapping("/")
-    public ResponseEntity<ResponseDto> addUser(@RequestBody UserCreateRequestDto userCreateRequestDto) {
+    @PostMapping
+    public ResponseDto addUser(@RequestBody UserCreateRequestDto userCreateRequestDto) {
         User user = userService.addUser(userMapper.mapToUser(userCreateRequestDto));
 
         UserCreateResponseDto userCreateResponseDto = userMapper.mapToUserCreateResponseDto(user);
 
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.CREATED)
-                .message("User added successfully")
+                .message("User Added Successfully")
                 .data(userCreateResponseDto)
                 .build();
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+//        return ResponseEntity.ok(responseDto);
+        return  responseDto;
     }
 
     @PostMapping("/getUser")
@@ -40,6 +42,20 @@ public class UserController {
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.OK)
                 .message("Requested User")
+                .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/updateUser")
+    public ResponseEntity<ResponseDto> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        User user = userService.updateUser(userMapper.mapUpdateRequestToUser(userUpdateRequestDto));
+        UserCreateResponseDto response = userMapper.mapToUserCreateResponseDto(user);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK)
+                .message("User Updated Successfully")
                 .data(response)
                 .build();
 

@@ -19,14 +19,7 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     private UserEntity mapToEntityUser(User user) {
-        UserEntity userEnt;
-
-        userEnt = userDao.findById(user.getId()).orElse(null);
-        if (userEnt == null) {
-            userEnt = new UserEntity();
-        }
-
-        userEnt.setId(user.getId());
+        UserEntity userEnt = new UserEntity();
         userEnt.setFirstName(user.getFirstName());
         userEnt.setMiddleName(user.getMiddleName());
         userEnt.setLastName(user.getLastName());
@@ -52,6 +45,13 @@ public class UserRepositoryImpl implements UserRepository{
     public User getUser(int id) {
         UserEntity userEnt = userDao.findById(id).orElseThrow(null);
         return mapToUser(userEnt);
+    }
+
+    public User updateUser(User user) {
+        UserEntity userEnt = mapToEntityUser(user);
+        userEnt.setId(user.getId());
+        UserEntity updatedUser = userDao.save(userEnt);
+        return mapToUser(updatedUser);
     }
 
 }

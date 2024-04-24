@@ -13,5 +13,4 @@ public class UserCreateResponseDto {
     private String phoneNumber;
     private String email;
     private String dateOfBirth;
-    private String message;
 }
