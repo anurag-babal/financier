@@ -51,4 +51,10 @@ public class FinanceRepositoryImpl implements FinanceRepository{
         finEnt = finDao.save(finEnt);
         return mapToFinance(finEnt);
     }
+
+    public boolean deleteFinanceDetails(int userId) {
+        FinanceEntity finEnt = finDao.findByUserIdId(userId).orElse(null);
+        finDao.delete(finEnt);
+        return true;
+    }
 }

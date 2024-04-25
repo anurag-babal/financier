@@ -16,4 +16,6 @@ public class FinanceService {
 
     public Finance updateFinanceDetails(Finance fin) { return finRepo.updateFinanceDetails(fin); }
 
+    public boolean deleteFinanceDetails(int userId) { return finRepo.deleteFinanceDetails(userId); }
+
 }

@@ -7,10 +7,7 @@ import com.example.userservice.mapper.FinanceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,6 +53,19 @@ public class FinanceController {
                 .status(HttpStatus.OK)
                 .message("Finance Details Updated Successfully")
                 .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteFinanceDetails/{userId}")
+    public ResponseEntity<ResponseDto> deleteFinanceDetails(@PathVariable int userId) {
+        boolean deleted = finService.deleteFinanceDetails(userId);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK)
+                .message("Finance Details Deleted Successfully")
+                .data(deleted)
                 .build();
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

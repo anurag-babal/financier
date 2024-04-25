@@ -9,4 +9,6 @@ public interface FinanceRepository {
     public Finance getFinanceDetails(Finance fin);
 
     public Finance updateFinanceDetails(Finance fin);
+
+    public boolean deleteFinanceDetails(int userId);
 }
