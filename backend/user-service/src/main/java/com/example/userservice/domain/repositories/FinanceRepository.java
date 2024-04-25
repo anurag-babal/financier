@@ -7,4 +7,6 @@ public interface FinanceRepository {
     public Finance addFinanceDetails(Finance fin);
 
     public Finance getFinanceDetails(Finance fin);
+
+    public Finance updateFinanceDetails(Finance fin);
 }

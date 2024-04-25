@@ -1,10 +1,7 @@
 package com.example.userservice.mapper;
 
 import com.example.userservice.domain.model.Finance;
-import com.example.userservice.dto.FinanceCreateRequestDto;
-import com.example.userservice.dto.FinanceCreateResponseDto;
-import com.example.userservice.dto.FinanceDetailsRequestDto;
-import com.example.userservice.dto.FinanceDetailsResponseDto;
+import com.example.userservice.dto.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,5 +34,13 @@ public class FinanceMapper {
         financeDetailsResponseDto.setBudget(fin.getBudget());
         financeDetailsResponseDto.setSavings(fin.getSavings());
         return financeDetailsResponseDto;
+    }
+
+    public Finance mapUpdateReqToFinance(FinanceUpdateRequestDto financeUpdateRequestDto) {
+        Finance fin = new Finance();
+        fin.setUserId(financeUpdateRequestDto.getUserId());
+        fin.setBudget(financeUpdateRequestDto.getBudget());
+        fin.setSavings(financeUpdateRequestDto.getSavings());
+        return fin;
     }
 }

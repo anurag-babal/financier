@@ -13,4 +13,7 @@ public class FinanceService {
     public Finance addFinanceDetails(Finance fin) { return finRepo.addFinanceDetails(fin); }
 
     public Finance getFinanceDetails(Finance fin) { return finRepo.getFinanceDetails(fin); }
+
+    public Finance updateFinanceDetails(Finance fin) { return finRepo.updateFinanceDetails(fin); }
+
 }

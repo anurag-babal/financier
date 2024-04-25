@@ -46,4 +46,18 @@ public class FinanceController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @PostMapping("/updateFinanceDetails")
+    public ResponseEntity<ResponseDto> updateFinanceDetails(@RequestBody FinanceUpdateRequestDto financeUpdateRequestDto) {
+        Finance fin = finService.updateFinanceDetails(finMapper.mapUpdateReqToFinance(financeUpdateRequestDto));
+        FinanceCreateResponseDto response = finMapper.mapToFinanceCreateResponseDto(fin);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK)
+                .message("Finance Details Updated Successfully")
+                .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

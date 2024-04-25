@@ -44,4 +44,11 @@ public class FinanceRepositoryImpl implements FinanceRepository{
         return mapToFinance(finEnt);
     }
 
+    public Finance updateFinanceDetails(Finance fin) {
+        FinanceEntity finEnt = finDao.findByUserIdId(fin.getUserId()).orElse(null);
+        finEnt.setBudget(fin.getBudget());
+        finEnt.setSavings(fin.getSavings());
+        finEnt = finDao.save(finEnt);
+        return mapToFinance(finEnt);
+    }
 }
