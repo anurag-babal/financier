@@ -11,4 +11,6 @@ public class FinanceService {
     private final FinanceRepository finRepo;
 
     public Finance addFinanceDetails(Finance fin) { return finRepo.addFinanceDetails(fin); }
+
+    public Finance getFinanceDetails(Finance fin) { return finRepo.getFinanceDetails(fin); }
 }

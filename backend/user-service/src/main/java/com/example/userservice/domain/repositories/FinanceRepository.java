@@ -5,4 +5,6 @@ import com.example.userservice.domain.model.Finance;
 public interface FinanceRepository {
 
     public Finance addFinanceDetails(Finance fin);
+
+    public Finance getFinanceDetails(Finance fin);
 }

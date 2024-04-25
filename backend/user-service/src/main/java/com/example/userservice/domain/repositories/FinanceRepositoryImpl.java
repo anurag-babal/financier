@@ -39,4 +39,9 @@ public class FinanceRepositoryImpl implements FinanceRepository{
         return fin;
     }
 
+    public Finance getFinanceDetails(Finance fin) {
+        FinanceEntity finEnt = finDao.findByUserIdId(fin.getUserId()).orElse(null);
+        return mapToFinance(finEnt);
+    }
+
 }

@@ -2,9 +2,7 @@ package com.example.userservice.controller;
 
 import com.example.userservice.domain.model.Finance;
 import com.example.userservice.domain.service.FinanceService;
-import com.example.userservice.dto.FinanceCreateRequestDto;
-import com.example.userservice.dto.FinanceCreateResponseDto;
-import com.example.userservice.dto.ResponseDto;
+import com.example.userservice.dto.*;
 import com.example.userservice.mapper.FinanceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,12 +21,26 @@ public class FinanceController {
 
     @PostMapping("/addFinanceDetails")
     public ResponseEntity<ResponseDto> addFinanceDetails(@RequestBody FinanceCreateRequestDto financeCreateRequestDto) {
-        Finance fin = finService.addFinanceDetails(finMapper.mapToFinance(financeCreateRequestDto));
+        Finance fin = finService.addFinanceDetails(finMapper.mapCreateReqToFinance(financeCreateRequestDto));
         FinanceCreateResponseDto response = finMapper.mapToFinanceCreateResponseDto(fin);
 
         ResponseDto responseDto = ResponseDto.builder()
                 .status(HttpStatus.CREATED)
                 .message("Finance Details Added Successfully")
+                .data(response)
+                .build();
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/getFinanceDetails")
+    public ResponseEntity<ResponseDto> getFinanceDetails(@RequestBody FinanceDetailsRequestDto financeDetailsRequestDto) {
+        Finance fin = finService.getFinanceDetails(finMapper.mapGetReqToFinance(financeDetailsRequestDto));
+        FinanceDetailsResponseDto response = finMapper.mapToFinanceDetailsResponse(fin);
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .status(HttpStatus.OK)
+                .message("Finance Details Fetched Successfully")
                 .data(response)
                 .build();
 
