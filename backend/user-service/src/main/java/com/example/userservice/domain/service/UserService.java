@@ -2,6 +2,7 @@ package com.example.userservice.domain.service;
 
 import com.example.userservice.domain.model.User;
 import com.example.userservice.domain.repositories.UserRepository;
+import com.example.userservice.dto.UserDetailsResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
@@ -12,4 +13,10 @@ public class UserService {
     public User addUser(User user) {
         return userRepo.addUser(user);
     }
+
+    public User getUser(int id) { return userRepo.getUser(id); }
+
+    public User updateUser(User user) { return userRepo.updateUser(user); }
+
+    public boolean deleteUser(int id) { return userRepo.deleteUser(id); }
 }
