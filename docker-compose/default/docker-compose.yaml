@@ -1,30 +1,18 @@
 services:
-  rabbit:
-    image: "rabbitmq:3.13-management"
-    container_name: rabbitmq
-    hostname: rabbitmq
+  frontend:
+    image: "anuragbabal/financier-frontend:latest"
+    container_name: financier-frontend
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-#      test: [ "CMD", "rabbitmqctl", "status" ]
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
+      - "80:80"
     extends:
       file: common-config.yaml
       service: network-deploy-service
 
-  configserver:
-    image: "anuragbabal/configserver:latest"
+  config-server:
+    image: "anuragbabal/financier-config-server:latest"
     container_name: config-server
     ports:
       - "8071:8071"
-    depends_on:
-      rabbit:
-        condition: service_healthy
     healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://localhost:8071/actuator/health" ]
       test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
@@ -33,46 +21,86 @@ services:
       retries: 3
       start_period: 10s
     environment:
-      - SPRING_APPLICATION_NAME=configserver
+      - SPRING_APPLICATION_NAME=config-server
     extends:
       file: common-config.yaml
       service: microservice-base-config
 
-  users:
-    image: "anuragbabal/users:latest"
-    container_name: users-service
+  discovery-server:
+    image: "anuragbabal/financier-discovery-server:latest"
+    container_name: discovery-server
     ports:
-      - "8080:8080"
+      - "8070:8070"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8070/actuator/health" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     environment:
-      - SPRING_APPLICATION_NAME=users
-      - SPRING_DATASOURCE_URL=jdbc:mysql://users-db:3306/userdb
+      - SPRING_APPLICATION_NAME=discovery-server
     depends_on:
-      configserver:
+      config-server:
         condition: service_completed_successfully
-      usersdb:
-        condition: service_healthy
     extends:
       file: common-config.yaml
-      service: microservice-configserver-config
+      service: microservice-config-server-config
 
-  transactions:
-    image: "anuragbabal/transactions:latest"
-    container_name: transactions-service
+  expense-service:
+    image: "anuragbabal/financier-expense-service:latest"
+    container_name: expense-service
     ports:
-      - "8081:8081"
+      - "8084:8084"
     environment:
-      - SPRING_APPLICATION_NAME=transactions
-      - SPRING_DATASOURCE_URL=jdbc:mysql://transactions-db:3307/transactionsdb
+      - SPRING_APPLICATION_NAME=expense-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3308/expense_db
     depends_on:
-      transactionsdb:
+      config-server:
+        condition: service_completed_successfully
+      expense-db:
         condition: service_healthy
     extends:
       file: common-config.yaml
-      service: microservice-configserver-config
+      service: microservice-config-server-config
 
-  usersdb:
-    image: "mysql"
-    container_name: users-db
+  expense-db:
+    image: "mysql:8.0"
+    container_name: expense-db
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: expenses_db
+    extends:
+      file: common-config.yaml
+      service: network-deploy-service
+
+  user-service:
+    image: "anuragbabal/financier-user-service:latest"
+    container_name: user-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_APPLICATION_NAME=user-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user_db
+    depends_on:
+      config-server:
+        condition: service_completed_successfully
+      user-db:
+        condition: service_healthy
+    extends:
+      file: common-config.yaml
+      service: microservice-config-server-config
+
+  user-db:
+    image: "mysql:8.0"
+    container_name: user-db
     ports:
       - "3306:3306"
     healthcheck:
@@ -83,29 +111,7 @@ services:
       start_period: 10s
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: userdb
+      MYSQL_DATABASE: user_db
     extends:
       file: common-config.yaml
       service: network-deploy-service
-
-  transactionsdb:
-    image: "mysql"
-    container_name: transactions-db
-    ports:
-      - "3307:3306"
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 3s
-      retries: 10
-      interval: 10s
-      start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: transactionsdb
-    extends:
-      file: common-config.yaml
-      service: network-deploy-service
-
-networks:
-  backend:
-    driver: bridge
