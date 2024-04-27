@@ -5,7 +5,8 @@ const categories = [
     {id: 4, name: 'Medical'},
     {id: 5, name: 'Entertainment'},
     {id: 6, name: 'Education'},
-    {id: 7, name: 'Others'},
+    {id: 7, name: 'Food'},
+    {id: 8, name: 'Others'},
 ];
 
 export async function getCategories() {

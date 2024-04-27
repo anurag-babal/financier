@@ -1,76 +1,42 @@
 import React, {useContext, useEffect, useState} from 'react'
 import '../css/Transactions.css'
-import {deleteTransaction, getTransactions} from '../services/TransactionService';
-import {formatDateToIndian} from "../utils/dateFormatter";
-import {TransactionContext} from "../store/transaction-context";
+import {ExpenseContext} from "../store/expense-context";
+import ExpenseTable from "./ExpenseTable";
 
 export default function Expenses({openForm}) {
-    const { setTransaction } = useContext(TransactionContext);
+    const {dataChanged, getLatestExpenses, setExpense, deleteExpense} = useContext(ExpenseContext);
 
-    const [transactions, setTransactions] = useState([]);
+    const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [isUpdated, setIsUpdated] = useState(false);
     const [error, setError] = useState(null);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+    const title = 'Recent Expenses';
 
     useEffect(() => {
         setLoading(true);
-        setError(null);
-        getTransactions()
-            .then(r => setTransactions(r))
+        getLatestExpenses(5)
+            .then(r => setExpenses(r.reverse()))
             .catch(e => setError(e))
             .finally(() => setLoading(false));
-    }, [isUpdated]);
+    }, [dataChanged]);
 
     const handleEdit = (id) => {
-        const transaction = transactions.find(t => t.id === id);
-        setTransaction(transaction);
+        setExpense(id);
         openForm();
     };
+
     const handleDelete = (id) => {
-        deleteTransaction(id)
+        setLoading(true);
+        deleteExpense(id)
             .then((r) => console.log(r))
-            .catch(e => setError(e));
-        setIsUpdated(!isUpdated);
+            .catch(e => setError(e))
+            .finally(() => setLoading(false));
     };
 
     return (
-        <div className={'container table-responsive'}>
-            {loading ?
-                (<div className="spinner-grow text-success"><span className="visually-hidden">Loading...</span></div>) :
-                <table className='table table-light table-striped table-bordered table-sm align-middle'>
-                    <thead className={'table-dark'}>
-                    <tr>
-                        <th>Id</th>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th>Details</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {transactions.map((transaction) => (
-                        <tr key={transaction.id}>
-                            <td>{transaction.id}</td>
-                            <td>{formatDateToIndian(transaction.date)}</td>
-                            <td>{transaction.category}</td>
-                            <td>₹{transaction.amount}</td>
-                            <td>{transaction.description}</td>
-                            <td>
-                                <button className='btn btn-primary me-2' onClick={() => handleEdit(transaction.id)}>
-                                    Edit
-                                </button>
-                                <button className='btn btn-danger ms-2'
-                                        onClick={() => handleDelete(transaction.id)}>
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))
-                    }
-                    </tbody>
-                </table>
-            }
-        </div>
+        <ExpenseTable title={title} expenses={expenses} loading={loading} error={error} isLoadingMore={isLoadingMore}
+                      onEdit={handleEdit} onDelete={handleDelete}
+        />
     )
 }

@@ -1,4 +1,4 @@
-export class Transaction {
+export class Expense {
     constructor(
         id = undefined,
         category = '',
@@ -6,7 +6,7 @@ export class Transaction {
         description = '',
         date = new Date().toISOString().split('T')[0]
     ) {
-        this.id = undefined;
+        this.id = id;
         this.category = category;
         this.amount = amount;
         this.description = description;

@@ -1,47 +1,50 @@
-import {useEffect, useId, useState, useContext } from "react";
+import {useEffect, useId, useState, useContext} from "react";
 import {Alert} from "./Alert";
 import {getCategories} from "../services/CategoryService";
-import {TransactionContext} from "../store/transaction-context";
+import {ExpenseContext} from "../store/expense-context";
 
 function ExpenseForm({onClose}) {
-    const {transaction, saveTransaction, updateTransaction} = useContext(TransactionContext);
+    const {expense, saveExpense, updateExpense} = useContext(ExpenseContext);
 
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState(null);
-    const [errors, setErrors] = useState({});
+    const [formErrors, setFormErrors] = useState({});
     const [categories, setCategories] = useState([]);
     const categoryDropDownId = useId();
 
     useEffect(() => {
         getCategories()
             .then(r => setCategories(r))
-            .catch(e => setErrors(e));
+            .catch(e => setFormErrors({general: e.message}));
     }, []);
 
     const handleChange = (inputIdentifier, newValue) => {
-        updateTransaction(inputIdentifier, newValue);
+        updateExpense(inputIdentifier, newValue);
     }
 
-    function validateForm() {
+    const validateForm = () => {
         const newErrors = {};
-        if (!transaction.category) {
+        if (!expense.category) {
             newErrors.category = 'Category is required.';
         }
-        if (transaction.amount <= 0) {
+        if (expense.amount <= 0) {
             newErrors.amount = 'Amount must be greater than 0.';
         }
-        setErrors(newErrors);
+        setFormErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     }
 
-    function handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault();
         if (validateForm()) {
             setLoading(true);
-            setErrors({});
-            saveTransaction();
-            setLoading(false)
-            onClose();
+            setFormErrors({});
+            saveExpense()
+                .then(r => setFormErrors({success: r}))
+                .catch(e => setFormErrors({general: e.message}))
+                .finally(() => {
+                    setLoading(false)
+                    onClose();
+                });
         }
     }
 
@@ -50,36 +53,36 @@ function ExpenseForm({onClose}) {
             <div className="form-group row align-items-center me-1 my-2">
                 <label className={'col-4'} htmlFor={categoryDropDownId}>Category:</label>
                 <select id={categoryDropDownId}
-                        className={'col'}
-                        value={transaction.category}
+                        className={'form-control col'}
+                        value={expense.category}
                         onChange={(event) => handleChange('category', event.target.value)}
                 >
-                    <option value={''}>Select Category</option>
+                    <option value={''}>--- Select Category ---</option>
                     {categories.map((category) => (
                         <option key={category.id} value={category.name}>
                             {category.name}
                         </option>
                     ))}
                 </select>
-                {errors.category && <Alert message={errors.category} type='danger'/>}
+                {formErrors.category && <Alert message={formErrors.category} type='danger'/>}
             </div>
             <div className="form-group row align-items-center me-1 my-2">
                 <label className={'col-4'}>Amount:</label>
                 <input
                     type='number'
                     className={'col'}
-                    value={transaction.amount}
+                    value={expense.amount}
                     required={true}
-                    onChange={(event) => handleChange('amount', event.target.value)}
+                    onChange={(event) => handleChange('amount', event.target.valueAsNumber)}
                 />
-                {errors.amount && <Alert message={errors.amount} type='danger'/>}
+                {formErrors.amount && <Alert message={formErrors.amount} type='danger'/>}
             </div>
             <div className="form-group row align-items-center me-1 my-2">
                 <label className={'col-4'}>Description:</label>
                 <input
                     type='text'
                     className={'col'}
-                    value={transaction.description}
+                    value={expense.description}
                     onChange={(event) => handleChange('description', event.target.value)}
                 />
             </div>
@@ -88,19 +91,17 @@ function ExpenseForm({onClose}) {
                 <input
                     type='date'
                     className={'col'}
-                    value={transaction.date}
+                    value={expense.date}
                     required={true}
                     onChange={(event) => handleChange('date', event.target.value)}
                 />
             </div>
             <button type={"submit"} className="btn btn-primary my-2" disabled={loading}>
-                {
-                    loading
-                        ? (<span className="spinner-border spinner-border-sm"></span>)
-                        : 'Add Expense'
+                {loading
+                    ? (<span className="spinner-border spinner-border-sm"></span>)
+                    : 'Add Expense'
                 }
             </button>
-            {data && <Alert message={data} type='success'/>}
         </form>
     );
 }
