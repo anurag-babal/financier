@@ -56,7 +56,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    sh "ansible-playbook -i localhost frontend/frontend-web/ansible/build.yaml"
+                    sh "ansible-playbook -i localhost frontend/ansible/build.yaml"
                 }
             }
         }
