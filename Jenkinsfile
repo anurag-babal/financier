@@ -65,7 +65,7 @@ pipeline {
                         docker.withRegistry('https://registry.hub.docker.com', 'DockerHubCred') {
                             // Loop through backend and frontend images to push
                             for (dir in glob('backend/*')) {
-                                sh "docker push anuragbabal/${dir##*/}:latest"
+                                sh "docker push anuragbabal/${basename dir}:latest"
                             }
                             sh "docker push anuragbabal/frontend:latest"
                         }
