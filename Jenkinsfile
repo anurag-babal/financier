@@ -76,7 +76,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    sh 'docker-compose pull'  # Pull latest images if pushed to Docker Hub
+                    sh 'docker-compose pull'
                     // sh 'docker-compose up -d'  # Start all services in docker-compose.yml
                     // Specify the configuration folder based on environment variable or logic
                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'  // Default to 'default'
