@@ -17,3 +17,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE = default
       - SPRING_CONFIG_IMPORT = configserver:http://config-server:8071
+
+networks:
+  backend:
+    driver: bridge
