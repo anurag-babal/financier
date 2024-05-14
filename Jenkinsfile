@@ -12,14 +12,9 @@ pipeline {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
 //                     def files = findFiles(glob: '**/backend/*')
-//                     def dir = new File(path)
-//                     def dirs = []
-//                     dir.traverse(type: DIRECTORIES, maxDepth: -1) { d ->
-//                         dirs.add(d)
-//                     }
 //                     def dirs = getDirectories("$WORKSPACE/backend")
-                    def dirs = new File()
-                    dirs.traverse(type: DIRECTORIES, maxDepth: -1) { dir ->
+//                     dirs.each { dir ->
+                    for (dir in glob('backend/*')
                         echo "${dir.name}"
 //                         sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename dir}"
                     }
