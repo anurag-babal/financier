@@ -53,13 +53,13 @@ pipeline {
                 }
             }
         }
-        stage('Build Frontend') {
-            steps {
-                script {
-                    sh "ansible-playbook -i localhost frontend/ansible/build.yaml"
-                }
-            }
-        }
+//         stage('Build Frontend') {
+//             steps {
+//                 script {
+//                     sh "ansible-playbook -i localhost frontend/ansible/build.yaml"
+//                 }
+//             }
+//         }
         stage('Build Docker Images') {
             steps {
                 script {
