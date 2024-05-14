@@ -18,7 +18,7 @@ pipeline {
 //                         dirs.add(d)
 //                     }
 //                     def dirs = getDirectories("$WORKSPACE/backend")
-                    def dirs = new File("$WORKSPACE/backend")
+                    def dirs = new File()
                     dirs.traverse(type: DIRECTORIES, maxDepth: -1) { dir ->
                         echo "${dir.name}"
 //                         sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename dir}"
