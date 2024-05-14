@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
-                    def files = findFiles('backend/*')
+                    def files = findFiles(glob: 'backend/*')
 //                     for (dir in glob('backend/*')) {
                     files.each { f ->
                         echo "${f.name}"
