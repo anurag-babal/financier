@@ -13,13 +13,6 @@ services:
     container_name: config-server
     ports:
       - "8071:8071"
-    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8071/actuator/health" ]
-      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=config-server
     extends:
@@ -31,12 +24,6 @@ services:
     container_name: discovery-server
     ports:
       - "8070:8070"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8070/actuator/health" ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=discovery-server
     depends_on:

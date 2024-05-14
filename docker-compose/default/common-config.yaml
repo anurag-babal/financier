@@ -9,7 +9,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 50M
+          memory: 256M
 
   microservice-config-server-config:
     extends:
