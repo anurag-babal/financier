@@ -70,7 +70,7 @@ pipeline {
                     for (microservice in microservices) {
                         docker.build("${microservice}", "${microservices_dir}/${microservice}")
                     }
-                    docker.build('frontend', 'frontend/frontend-web')
+                    docker.build('frontend', 'frontend')
                 }
             }
         }
