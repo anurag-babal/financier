@@ -11,17 +11,12 @@ pipeline {
             steps {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
-//                     def files = findFiles(glob: 'backend/*')
-// //                     for (dir in glob('backend/*')) {
-//                     files.each { f ->
-//                         echo "${f.name}"
-//                         if (f.directory) {
-//                             sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename f}"
-//                         }
-//                     }
-                    dirs = readDir()
-                    dirs.each { f ->
-                        sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename f}"
+                    def files = findFiles(glob: 'backend/*')
+                    files.each { f ->
+                        echo "${f.name}"
+                        if (f.directory) {
+                            sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename f}"
+                        }
                     }
                 }
             }
@@ -30,8 +25,10 @@ pipeline {
             steps {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
-                    for (dir in glob('backend/*')) {
-                        sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${basename dir}"
+                    def dirs = findFiles(glob: '/backend/*')
+//                     for (dir in glob('backend/*')) {
+                    dirs.each { f ->
+                        sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${basename f}"
                     }
                 }
             }
@@ -94,17 +91,4 @@ pipeline {
             }
         }
     }
-}
-
-@NonCPS
-def readDir()
-{
-    def  dirs = []
-    new File("${workspace}").eachDir() { dir ->
-        println dir.getName()
-        if (!dir.getName().startsWith('.')) {
-            dirs.add(dir.getName())
-        }
-    }
-    dirs
 }
