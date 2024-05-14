@@ -14,7 +14,7 @@ pipeline {
 //                     def files = findFiles(glob: '**/backend/*')
 //                     def dirs = getDirectories("$WORKSPACE/backend")
 //                     dirs.each { dir ->
-                    for (dir in glob('backend/*')
+                    for (dir in glob('backend/*') {
                         echo "${dir.name}"
 //                         sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename dir}"
                     }
