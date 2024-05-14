@@ -16,8 +16,10 @@ def microservices = [
 pipeline {
     agent any
     environment {
-        PUSH_TO_DOCKER_HUB = 'false'
+        APP_NAME = 'financier'
+        PUSH_TO_DOCKER_HUB = 'true'
         DOCKER_COMPOSE_CONFIG = 'default'
+        DOCKER_IMAGE_PREFIX = 'anuragbabal/financier'
     }
     stages {
         stage('Checkout Code') {
@@ -66,9 +68,9 @@ pipeline {
 //                     sh "ansible-playbook -i localhost ansible/build-backend-images.yaml -e docker_username=anuragbabal"
 //                     sh "ansible-playbook -i localhost ansible/build-frontend-image.yaml -e docker_username=anuragbabal"
                     for (microservice in microservices) {
-                        docker.build("anuragbabal/${microservice}", "${microservices_dir}/${microservice}")
+                        docker.build("${microservice}", "${microservices_dir}/${microservice}")
                     }
-                    docker.build('anuragbabal/frontend', 'frontend')
+                    docker.build('frontend', 'frontend/frontend-web')
                 }
             }
         }
@@ -95,9 +97,11 @@ pipeline {
                         docker.withRegistry('', 'DockerHubCred') {
                             // Loop through backend and frontend images to push
                             for (microservice in microservices) {
-                                sh "docker push anuragbabal/${microservice}:latest"
+                                sh "docker tag ${microservice} ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
+                                sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
                             }
-                            sh "docker push anuragbabal/frontend:latest"
+                            sh "docker tag frontend ${env.DOCKER_IMAGE_PREFIX}-frontend:latest"
+                            sh "docker push ${env.DOCKER_IMAGE_PREFIX}-frontend:latest"
                         }
                     }
                 }
