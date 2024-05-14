@@ -1,22 +1,20 @@
+// List of microservices
+def microservices = [
+    'auth-service',
+    'user-service',
+    'config-server',
+    'report-service',
+    'gateway-server',
+    'expense-service',
+    'discovery-server',
+    'transaction-service'
+]
+
+// Directory containing microservices
+def microservices_dir = 'backend'
+
 pipeline {
     agent any
-
-    vars {
-        // List of microservices
-        microservices = [
-            'auth-service',
-            'user-service',
-            'config-server',
-            'report-service',
-            'gateway-server',
-            'expense-service',
-            'discovery-server',
-            'transaction-service'
-        ]
-
-        // Directory containing microservices
-        microservices_dir = 'backend'
-    }
 
     stages {
         stage('Checkout Code') {
@@ -43,7 +41,7 @@ pipeline {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
                     def dirs = getDirectories("$WORKSPACE")
                     dirs.each { dir ->
-                        echo "${dir}"
+                        sh 'echo "${dir}"'
 //                         sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${basename dir}"
                     }
                 }
