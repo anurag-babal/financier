@@ -16,7 +16,7 @@ def microservices = [
 pipeline {
     agent any
     environment {
-        PUSH_TO_DOCKER_HUB = 'true'
+        PUSH_TO_DOCKER_HUB = 'false'
         DOCKER_COMPOSE_CONFIG = 'default'
     }
     stages {
@@ -106,7 +106,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    sh 'docker-compose pull'
+                    // sh 'docker-compose pull'
                     // sh 'docker-compose up -d'  # Start all services in docker-compose.yml
                     // Specify the configuration folder based on environment variable or logic
                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'  // Default to 'default'
