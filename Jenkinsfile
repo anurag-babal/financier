@@ -3,13 +3,13 @@ def microservices_dir = 'backend'
 
 // List of microservices
 def microservices = [
+    'config-server',
+    'discovery-server',
+    'gateway-server',
     'auth-service',
     'user-service',
-    'config-server',
     'report-service',
-    'gateway-server',
     'expense-service',
-    'discovery-server',
     'transaction-service'
 ]
 
