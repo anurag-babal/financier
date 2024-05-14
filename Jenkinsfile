@@ -1,6 +1,23 @@
 pipeline {
     agent any
 
+    vars {
+        // List of microservices
+        microservices = [
+            'auth-service',
+            'user-service',
+            'config-server',
+            'report-service',
+            'gateway-server',
+            'expense-service',
+            'discovery-server',
+            'transaction-service'
+        ]
+
+        // Directory containing microservices
+        microservices_dir = 'backend'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -10,9 +27,12 @@ pipeline {
         stage('Run Tests (Backend)') {
             steps {
                 script {
-                    for (dir in glob('backend/*')) {
-                        echo "${dir.name}"
-//                         sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename dir}"
+                    // Loop through each microservice
+                    for (microservice in microservices) {
+                        dir("${microservices_dir}/${microservice}") {
+                            // Execute Ansible playbook
+                            sh "ansible-playbook -i localhost ansible/microservice.yaml -e microservice_name=${microservice}"
+                        }
                     }
                 }
             }
