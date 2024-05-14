@@ -1,6 +1,5 @@
 ---
-- hosts: localhost
-  become: true
+- hosts: all
   tasks:
     - name: Build backend microservice images
       loop: "{{ microservices }}"
@@ -25,13 +24,13 @@
   vars:
     microservices:
       - config-server
-      - discovery-server
-      - gateway-server
-      - auth-service
-      - user-service
-      - report-service
-      - expense-service
-      - transaction-service
+#      - discovery-server
+#      - gateway-server
+#      - auth-service
+#      - user-service
+#      - report-service
+#      - expense-service
+#      - transaction-service
     microservices_dir: backend # Directory where microservices are located
     push_to_docker_hub: false  # Set to true if you want to push images to Docker Hub
     docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"  # Get username from environment variable
