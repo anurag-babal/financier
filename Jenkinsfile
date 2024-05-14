@@ -12,7 +12,7 @@ pipeline {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
                     for (dir in glob('backend/*')) {
-                        sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${dir##*/}"
+                        sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${basename dir}"
                     }
                 }
             }
@@ -22,7 +22,7 @@ pipeline {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
                     for (dir in glob('backend/*')) {
-                        sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${dir##*/}"
+                        sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${basename dir}"
                     }
                 }
             }
