@@ -110,7 +110,7 @@ pipeline {
                     // sh 'docker-compose up -d'  # Start all services in docker-compose.yml
                     // Specify the configuration folder based on environment variable or logic
                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'  // Default to 'default'
-                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d"
+                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d config-server frontend"
                 }
             }
         }
