@@ -63,8 +63,12 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh "ansible-playbook -i localhost ansible/build-backend-images.yaml -e docker_username=anuragbabal"
-                    sh "ansible-playbook -i localhost ansible/build-frontend-image.yaml -e docker_username=anuragbabal"
+//                     sh "ansible-playbook -i localhost ansible/build-backend-images.yaml -e docker_username=anuragbabal"
+//                     sh "ansible-playbook -i localhost ansible/build-frontend-image.yaml -e docker_username=anuragbabal"
+                    for (microservice in microservices) {
+                        docker.build("anuragbabal/${microservice}", "${microservices_dir}/${microservice}")
+                    }
+                    docker.build('anuragbabal/frontend', 'frontend')
                 }
             }
         }
