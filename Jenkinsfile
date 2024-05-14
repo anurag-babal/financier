@@ -4,18 +4,21 @@ def microservices_dir = 'backend'
 // List of microservices
 def microservices = [
     'config-server',
-    'discovery-server',
-    'gateway-server',
-    'auth-service',
-    'user-service',
-    'report-service',
-    'expense-service',
-    'transaction-service'
+//     'discovery-server',
+//     'gateway-server',
+//     'auth-service',
+//     'user-service',
+//     'report-service',
+//     'expense-service',
+//     'transaction-service'
 ]
 
 pipeline {
     agent any
-
+    environment {
+        PUSH_TO_DOCKER_HUB = 'true',
+        DOCKER_COMPOSE_CONFIG = 'default',
+    }
     stages {
         stage('Checkout Code') {
             steps {
@@ -29,7 +32,7 @@ pipeline {
                     for (microservice in microservices) {
                         dir("${microservices_dir}/${microservice}") {
                             // Execute Ansible playbook
-//                             sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${microservice}"
+                            // sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${microservice}"
                             sh 'mvn test'
                         }
                     }
@@ -43,7 +46,8 @@ pipeline {
                     for (microservice in microservices) {
                         dir("${microservices_dir}/${microservice}") {
                             // Execute Ansible playbook
-                            sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${microservice}"
+                            // sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${microservice}"
+                            sh 'mvn clean package'
                         }
                     }
                 }
@@ -86,8 +90,8 @@ pipeline {
                         // sh "docker login -u your-username -p \$DOCKER_PASSWORD"
                         docker.withRegistry('https://registry.hub.docker.com', 'DockerHubCred') {
                             // Loop through backend and frontend images to push
-                            for (dir in glob('backend/*')) {
-                                sh "docker push anuragbabal/${basename dir}:latest"
+                            for (microservice in microservices) {
+                                sh "docker push anuragbabal/${microservice}:latest"
                             }
                             sh "docker push anuragbabal/frontend:latest"
                         }
