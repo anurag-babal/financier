@@ -12,7 +12,7 @@ services:
     image: "anuragbabal/financier-config-server:latest"
     container_name: config-server
     ports:
-      - "8071:8071"
+      - "8071:8080"
     healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://localhost:8071/actuator/health" ]
       test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
@@ -30,7 +30,7 @@ services:
     image: "anuragbabal/financier-discovery-server:latest"
     container_name: discovery-server
     ports:
-      - "8070:8070"
+      - "8070:8080"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8070/actuator/health" ]
       interval: 10s
@@ -50,7 +50,7 @@ services:
     image: "anuragbabal/financier-expense-service:latest"
     container_name: expense-service
     ports:
-      - "8084:8084"
+      - "8084:8080"
     environment:
       - SPRING_APPLICATION_NAME=expense-service
       - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3308/expense_db
@@ -85,7 +85,7 @@ services:
     image: "anuragbabal/financier-user-service:latest"
     container_name: user-service
     ports:
-      - "8085:8085"
+      - "8085:8080"
     environment:
       - SPRING_APPLICATION_NAME=user-service
       - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user_db
