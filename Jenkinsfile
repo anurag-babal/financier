@@ -1,3 +1,6 @@
+// Directory containing microservices
+def microservices_dir = 'backend'
+
 // List of microservices
 def microservices = [
     'auth-service',
@@ -9,9 +12,6 @@ def microservices = [
     'discovery-server',
     'transaction-service'
 ]
-
-// Directory containing microservices
-def microservices_dir = 'backend'
 
 pipeline {
     agent any
@@ -29,7 +29,7 @@ pipeline {
                     for (microservice in microservices) {
                         dir("${microservices_dir}/${microservice}") {
                             // Execute Ansible playbook
-                            sh "ansible-playbook -i localhost ansible/microservice.yaml -e microservice_name=${microservice}"
+                            sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${microservice}"
                         }
                     }
                 }
@@ -38,11 +38,12 @@ pipeline {
         stage('Run Build (Backend)') {
             steps {
                 script {
-                    // Loop through all microservice directories (assuming they're in a folder named 'backend')
-                    def dirs = getDirectories("$WORKSPACE")
-                    dirs.each { dir ->
-                        sh 'echo "${dir}"'
-//                         sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${basename dir}"
+                    // Loop through each microservice
+                    for (microservice in microservices) {
+                        dir("${microservices_dir}/${microservice}") {
+                            // Execute Ansible playbook
+                            sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${microservice}"
+                        }
                     }
                 }
             }
@@ -105,14 +106,4 @@ pipeline {
             }
         }
     }
-}
-
-@NonCPS
-def getDirectories(path) {
-    def dir = new File(path)
-    def dirs = []
-    dir.traverse(type: DIRECTORIES, maxDepth: -1) { d ->
-        dirs.add(d)
-    }
-    return dirs
 }
