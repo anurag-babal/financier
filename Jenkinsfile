@@ -29,7 +29,8 @@ pipeline {
                     for (microservice in microservices) {
                         dir("${microservices_dir}/${microservice}") {
                             // Execute Ansible playbook
-                            sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${microservice}"
+//                             sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${microservice}"
+                            sh 'mvn test'
                         }
                     }
                 }
