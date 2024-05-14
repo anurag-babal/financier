@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
-                    def files = findFiles(glob: 'backend/*')
+                    def files = findFiles(glob: '**/backend/*')
                     files.each { f ->
                         echo "${f.name}"
                         if (f.directory) {
@@ -25,8 +25,7 @@ pipeline {
             steps {
                 script {
                     // Loop through all microservice directories (assuming they're in a folder named 'backend')
-                    def dirs = findFiles(glob: 'backend/*')
-//                     for (dir in glob('backend/*')) {
+                    def dirs = findFiles(glob: '**/backend/*')
                     dirs.each { f ->
                         sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${basename f}"
                     }
