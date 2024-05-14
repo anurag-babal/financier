@@ -16,8 +16,8 @@ def microservices = [
 pipeline {
     agent any
     environment {
-        PUSH_TO_DOCKER_HUB = 'true',
-        DOCKER_COMPOSE_CONFIG = 'default',
+        PUSH_TO_DOCKER_HUB = 'true'
+        DOCKER_COMPOSE_CONFIG = 'default'
     }
     stages {
         stage('Checkout Code') {
