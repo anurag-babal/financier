@@ -92,7 +92,7 @@ pipeline {
                 script {
                     if (env.PUSH_TO_DOCKER_HUB == 'true') {
                         // sh "docker login -u your-username -p \$DOCKER_PASSWORD"
-                        docker.withRegistry('https://registry.hub.docker.com', 'DockerHubCred') {
+                        docker.withRegistry('', 'DockerHubCred') {
                             // Loop through backend and frontend images to push
                             for (microservice in microservices) {
                                 sh "docker push anuragbabal/${microservice}:latest"
