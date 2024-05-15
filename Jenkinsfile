@@ -107,14 +107,31 @@ pipeline {
                 }
             }
         }
-        stage('Deploy with Docker Compose') {
+//         stage('Deploy with Docker Compose') {
+//             steps {
+//                 script {
+//                     // sh 'docker-compose pull'
+//                     // sh 'docker-compose up -d'  # Start all services in docker-compose.yml
+//                     // Specify the configuration folder based on environment variable or logic
+//                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'  // Default to 'default'
+//                     sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d config-server frontend"
+//                 }
+//             }
+//         }
+        stage('Deploying to Kubernetes') {
+            environment {
+                ROOT_DIR = 'kubernetes'
+                DEPLOYMENT_DIR = "${ROOT_DIR}/deploy"
+                SERVICE_DIR = "${ROOT_DIR}/service"
+            }
             steps {
                 script {
-                    // sh 'docker-compose pull'
-                    // sh 'docker-compose up -d'  # Start all services in docker-compose.yml
-                    // Specify the configuration folder based on environment variable or logic
-                    def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'  // Default to 'default'
-                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d config-server frontend"
+                    kube.createOrUpdateDeployments("${env.DEPLOYMENT_DIR}")
+                    kube.createOrUpdateServices("${env.SERVICE_DIR}")
+                    kubernetesDeploy(
+                        // configs: '${env.DEPLOYMENT_DIR}/*.yaml', '${env.SERVICE_DIR}/*.yaml'
+                        configs: "${env.DEPLOYMENT_DIR}/frontend*.yaml", "${env.SERVICE_DIR}/frontend*.yaml"
+                    )
                 }
             }
         }
