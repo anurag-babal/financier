@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.33.0 (3ce457399)
+  labels:
+    io.kompose.service: expense-service
+  name: expense-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: expense-service
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.33.0 (3ce457399)
+      labels:
+        io.kompose.network/default-backend: "true"
+        io.kompose.service: expense-service
+    spec:
+      containers:
+        - env:
+            - name: SPRING_APPLICATION_NAME
+              value: expense-service
+            - name: 'SPRING_CONFIG_IMPORT '
+              value: ' configserver:http://config-server:8071'
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://expense-db:3308/expense_db
+            - name: 'SPRING_PROFILES_ACTIVE '
+              value: ' default'
+          image: anuragbabal/financier-expense-service:latest
+          name: expense-service
+          ports:
+            - containerPort: 8084
+              hostPort: 8084
+              protocol: TCP
+          resources:
+            limits:
+              memory: "268435456"
+      restartPolicy: Always
