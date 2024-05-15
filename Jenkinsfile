@@ -126,8 +126,6 @@ pipeline {
             }
             steps {
                 script {
-                    kube.createOrUpdateDeployments("${env.DEPLOYMENT_DIR}")
-                    kube.createOrUpdateServices("${env.SERVICE_DIR}")
                     kubernetesDeploy(
                         // configs: '${env.DEPLOYMENT_DIR}/*.yaml', '${env.SERVICE_DIR}/*.yaml'
                         configs: "${env.DEPLOYMENT_DIR}/frontend*.yaml", "${env.SERVICE_DIR}/frontend*.yaml"
