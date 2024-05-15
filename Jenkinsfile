@@ -17,7 +17,7 @@ pipeline {
     agent any
     environment {
         APP_NAME = 'financier'
-        PUSH_TO_DOCKER_HUB = 'true'
+        PUSH_TO_DOCKER_HUB = 'false'
         DOCKER_COMPOSE_CONFIG = 'default'
         DOCKER_IMAGE_PREFIX = 'anuragbabal/financier'
     }
@@ -126,10 +126,9 @@ pipeline {
             }
             steps {
                 script {
-                    kubernetesDeploy(
-                        // configs: '${env.DEPLOYMENT_DIR}/*.yaml', '${env.SERVICE_DIR}/*.yaml'
-                        configs: "${env.DEPLOYMENT_DIR}/frontend*.yaml", "${env.SERVICE_DIR}/frontend*.yaml"
-                    )
+                    // kubernetesDeploy(configs: '${env.DEPLOYMENT_DIR}/*.yaml', '${env.SERVICE_DIR}/*.yaml')
+                    sh "kubectl apply -f ${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"
+                    sh "kubectl apply -f ${env.SERVICE_DIR}/frontend-service.yaml"
                 }
             }
         }
