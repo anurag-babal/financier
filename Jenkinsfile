@@ -4,7 +4,7 @@ def microservices_dir = 'backend'
 // List of microservices
 def microservices = [
     'config-server',
-//     'discovery-server',
+    'discovery-server',
 //     'auth-service',
 //     'user-service',
 //     'report-service',
