@@ -5,12 +5,12 @@ def microservices_dir = 'backend'
 def microservices = [
     'config-server',
 //     'discovery-server',
-//     'gateway-server',
 //     'auth-service',
 //     'user-service',
 //     'report-service',
 //     'expense-service',
-//     'transaction-service'
+//     'transaction-service',
+//     'gateway-server'
 ]
 
 pipeline {
@@ -32,10 +32,10 @@ pipeline {
                 script {
                     // Loop through each microservice
                     for (microservice in microservices) {
-                        dir("${microservices_dir}/${microservice}") {
+//                         dir("${microservices_dir}/${microservice}") {
                             // Execute Ansible playbook
-                            // sh "ansible-playbook -i localhost ansible/test.yaml -e microservice_name=${microservice}"
-                            sh 'mvn test'
+                            sh "ansible-playbook ansible/test.yaml -e microservice_name=${microservice}"
+//                             sh 'mvn test'
                         }
                     }
                 }
