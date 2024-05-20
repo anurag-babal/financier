@@ -1,23 +1,11 @@
-# Build a Docker image for the React frontend
-- hosts: localhost
+---
+- hosts: all
   become: true
   tasks:
     - name: Build frontend image
       docker_image:
-        name: "{{ docker_username }}/financier-react:latest"
+        name: "{{ microservice }}:latest"
         state: present
         build:
           path: frontend
           dockerfile: Dockerfile
-    - name: Push image to Docker Hub (optional)
-      when: push_to_docker_hub
-      docker_hub:
-        name: "{{ docker_username }}/financier-react:latest"
-        state: present
-        username: "{{ docker_username }}"
-        password: "{{ docker_password }}"
-
-  vars:
-    push_to_docker_hub: false
-    docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
-    docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"

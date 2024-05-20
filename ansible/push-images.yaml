@@ -1,0 +1,22 @@
+---
+- name: Push Docker image to Docker Hub
+  hosts: all  # Adjust if needed for a remote Docker daemon
+  become: true  # Required for Docker interaction
+
+  tasks:
+    - name: Login to Docker Hub (using Docker credentials)
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+    - name: Tag image for pushing (using docker command)
+      command: docker tag {{ microservice }}:latest {{ docker_hub_image_prefix }}/{{ microservice }}:latest
+    - name: Push Docker image to Docker Hub
+      docker_image:
+        name: "{{ docker_hub_image_prefix }}/{{ microservice }}:latest"
+        state: pushed
+
+  vars:
+    docker_hub_username: anuragbabal
+#    docker_hub_password: "{{ lookup('env', 'DOCKER_HUB_PASSWORD') }}"  # Use environment variable for security
+    docker_hub_password: @my_vault.yaml # Use Ansible Vault for security
+    docker_hub_image_prefix: "{{ docker_hub_username }}/financier-"

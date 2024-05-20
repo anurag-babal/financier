@@ -1,0 +1,26 @@
+---
+- name: Deploy microservices to Kubernetes
+  hosts: localhost
+  connection: local
+  become: true  # Required for interacting with the Kubernetes API server
+
+  tasks:
+    - name: Ensure kubectl is available
+      command: which kubectl
+      register: kubectl_check
+      failed_when: kubectl_check.rc != 0
+
+    - name: Fail if kubectl is not available
+      fail:
+        msg: "kubectl is not installed or not accessible. Please install and configure kubectl."
+      when: kubectl_check.rc != 0
+
+    - name: Deploy service 1 (replace with your service details)
+      kubernetes_manifest:
+        src: "{{ service_file }}"  # Replace with your service manifest file
+        state: present
+
+    - name: Deploy deployment 1 (replace with your deployment details)
+      kubernetes_manifest:
+        src: "{{ deploy_file }}"  # Replace with your deployment manifest file
+        state: present

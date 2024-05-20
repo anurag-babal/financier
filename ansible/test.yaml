@@ -8,4 +8,3 @@
 
   vars:
     microservices_dir: backend  # Replace with the directory containing your microservices if it's different
-    microservice_name: "{{ microservice_name }}"  # Get microservice name from command line environment variable

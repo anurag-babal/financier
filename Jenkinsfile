@@ -1,6 +1,3 @@
-// Directory containing microservices
-def microservices_dir = 'backend'
-
 // List of microservices
 def microservices = [
     'config-server',
@@ -32,11 +29,8 @@ pipeline {
                 script {
                     // Loop through each microservice
                     for (microservice in microservices) {
-//                         dir("${microservices_dir}/${microservice}") {
-                            // Execute Ansible playbook
-                            sh "ansible-playbook ansible/test.yaml -e microservice_name=${microservice}"
-//                             sh 'mvn test'
-//                         }
+                        // Execute Ansible playbook
+                        sh "ansible-playbook -i ansible/hosts ansible/test.yaml -e microservice_name=${microservice}"
                     }
                 }
             }
@@ -46,63 +40,34 @@ pipeline {
                 script {
                     // Loop through each microservice
                     for (microservice in microservices) {
-                        dir("${microservices_dir}/${microservice}") {
-                            // Execute Ansible playbook
-                            // sh "ansible-playbook -i localhost ansible/build.yaml -e microservice_name=${microservice}"
-                            sh 'mvn clean package'
-                        }
+                        // Execute Ansible playbook
+                        sh "ansible-playbook -i ansible/hosts ansible/build.yaml -e microservice_name=${microservice}"
                     }
                 }
             }
         }
-//         stage('Build Frontend') {
-//             steps {
-//                 script {
-//                     sh "ansible-playbook -i localhost frontend/ansible/build.yaml"
-//                 }
-//             }
-//         }
         stage('Build Docker Images') {
             steps {
                 script {
-//                     sh "ansible-playbook -i localhost ansible/build-backend-images.yaml -e docker_username=anuragbabal"
-//                     sh "ansible-playbook -i localhost ansible/build-frontend-image.yaml -e docker_username=anuragbabal"
                     for (microservice in microservices) {
-                        docker.build("${microservice}", "${microservices_dir}/${microservice}")
+                        sh "ansible-playbook -i ansible/hosts ansible/build-backend-images.yaml -e microservice_name=${microservice}"
                     }
-                    docker.build('frontend', 'frontend')
+                    sh "ansible-playbook -i ansible/hosts ansible/build-frontend-image.yaml -e microservice_name=${frontend}"
                 }
             }
         }
-//         stage('Build Backend Docker Images') {
-//             steps {
-//                 script {
-//                     // Loop through all microservice directories
-//                     for (dir in glob('backend/*')) {
-//                         sh "ansible-playbook -i localhost ansible/build-backend-image.yaml -e microservice_name=${dir##*/}"
-//                     }
-//                 }
-//             }
-//         }
-//         stage('Build Frontend Docker Image') {
-//             steps {
-//                 sh "docker build -t anuragbabal/frontend:latest frontend/frontend-web"
-//             }
-//         }
         stage('Push Images to Docker Hub') {
             steps {
                 script {
                     if (env.PUSH_TO_DOCKER_HUB == 'true') {
-                        // sh "docker login -u your-username -p \$DOCKER_PASSWORD"
-                        docker.withRegistry('', 'DockerHubCred') {
-                            // Loop through backend and frontend images to push
-                            for (microservice in microservices) {
-                                sh "docker tag ${microservice} ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
-                                sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
-                            }
-                            sh "docker tag frontend ${env.DOCKER_IMAGE_PREFIX}-frontend:latest"
-                            sh "docker push ${env.DOCKER_IMAGE_PREFIX}-frontend:latest"
+                        for (microservice in microservices) {
+                            sh "ansible-playbook -i ansible/hosts ansible/push-images.yaml
+                                -e microservice_name=${microservice}"
                         }
+                        sh "ansible-playbook -i ansible/hosts ansible/push-images.yaml
+                            --ask-vault-pass
+                            -e microservice_name=${frontend}
+                            -e docker_hub_password=@ansible/my_vault.yaml"
                     }
                 }
             }
@@ -126,9 +91,18 @@ pipeline {
             }
             steps {
                 script {
-                    // kubernetesDeploy(configs: '${env.DEPLOYMENT_DIR}/*.yaml', '${env.SERVICE_DIR}/*.yaml')
-                    sh "kubectl apply -f ${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"
-                    sh "kubectl apply -f ${env.SERVICE_DIR}/frontend-service.yaml"
+                    for (microservice in microservices) {
+//                         sh "kubectl apply -f ${env.DEPLOYMENT_DIR}/${microservice}-deployment.yaml"
+//                         sh "kubectl apply -f ${env.SERVICE_DIR}/${microservice}-service.yaml"
+                        sh "ansible-playbook -i ansible/hosts ansible/deploy-services.yaml
+                            -e service_file=${env.DEPLOYMENT_DIR}/${microservice}-service.yaml
+                            -e deployment_file=${env.DEPLOYMENT_DIR}/${microservice}-deployment.yaml"
+                    }
+                    sh "ansible-playbook -i ansible/hosts ansible/deploy-services.yaml
+                        -e service_file=${env.DEPLOYMENT_DIR}/frontend-service.yaml
+                        -e deployment_file=${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"
+//                     sh "kubectl apply -f ${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"
+//                     sh "kubectl apply -f ${env.SERVICE_DIR}/frontend-service.yaml"
                 }
             }
         }
