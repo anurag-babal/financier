@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-  become: true  # Optional, depends on your Maven setup
+#  become: true  # Optional, depends on your Maven setup
   tasks:
     - name: Run mvn test for {{ microservice_name }}
       command: mvn test -f {{ microservices_dir }}/{{ microservice_name }}/pom.xml
