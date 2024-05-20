@@ -36,7 +36,7 @@ pipeline {
                             // Execute Ansible playbook
                             sh "ansible-playbook ansible/test.yaml -e microservice_name=${microservice}"
 //                             sh 'mvn test'
-                        }
+//                         }
                     }
                 }
             }
