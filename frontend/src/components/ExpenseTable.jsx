@@ -1,7 +1,7 @@
 import React from 'react';
 import {formatDateToIndian} from "../utils/dateFormatter";
 
-const ExpenseTable = ({ title, expenses, loading, error, isLoadingMore, onEdit, onDelete }) => {
+const ExpenseTable = ({title, expenses, loading, error, isLoadingMore, onEdit, onDelete}) => {
     if (error) {
         return (
             <div className="container table-responsive">
@@ -24,7 +24,8 @@ const ExpenseTable = ({ title, expenses, loading, error, isLoadingMore, onEdit, 
             )}
             {isLoadingMore && (
                 <div className="text-center mt-2">
-                    <span className="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
+                    <span className="spinner-border spinner-border-sm text-primary" role="status"
+                          aria-hidden="true"></span>
                     <span className="visually-hidden">Loading more...</span>
                 </div>
             )}
@@ -41,12 +42,12 @@ const ExpenseTable = ({ title, expenses, loading, error, isLoadingMore, onEdit, 
                     </tr>
                     </thead>
                     <tbody>
-                    {expenses.map((expense) => (
+                    {expenses.map((expense, index) => (
                         <tr key={expense.id}>
-                            <td>{expense.id}</td>
+                            <td>{index + 1}</td>
                             <td>{formatDateToIndian(expense.date)}</td>
                             <td>{expense.category}</td>
-                            <td>₹{expense.amount.toFixed(2)}</td> {/* Format amount with 2 decimal places */}
+                            <td>₹{expense.amount.toFixed(2)}</td>{/* Format amount with 2 decimal places */}
                             <td>{expense.description}</td>
                             <td>
                                 <button className="btn btn-primary me-2" onClick={() => onEdit(expense.id)}>

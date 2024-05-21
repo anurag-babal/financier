@@ -1,6 +1,7 @@
-import {createContext, useEffect, useState} from 'react';
+import {createContext, useContext, useEffect, useState} from 'react';
 import {Expense} from "../model/Expense";
 import * as expenseService from "../services/ExpenseService";
+import {AuthContext} from "./auth-context";
 
 export const ExpenseContext = createContext({
     expense: {},
@@ -15,27 +16,30 @@ export const ExpenseContext = createContext({
 });
 
 export default function ExpenseProvider({children}) {
+    const {userId} = useContext(AuthContext);
     const [expense, setExpense] = useState(null);
     const [expenses, setExpenses] = useState([]);
     const [dataChanged, setDataChanged] = useState(false);
 
     useEffect(() => {
-        expenseService.getExpenses()
+        expenseService.getExpensesByUserId(userId)
             .then(r => setExpenses(r))
             .catch(e => console.error(e));
         setExpense(new Expense());
     }, [dataChanged]);
 
-    const getSumOfMonthlyExpensesHandler = async (month, year) => {
-        return expenseService.getSumOfMonthlyExpenses(month, year)
+    const getSumOfMonthlyExpensesHandler = async (userId, month, year) => {
+        return expenseService.getSumOfMonthlyExpenses(userId, month, year)
             .then(r => r)
             .catch(e => console.error(e));
     }
 
-    const getLatestExpensesHandler = async (count) => {
-        return expenseService.getLatestExpenses(count)
-            .then(r => r)
-            .catch(e => console.error(e));
+    const getLatestExpensesHandler = async (userId, count) => {
+        try {
+            return await expenseService.getLatestExpenses(userId, count);
+        } catch (error) {
+            throw error.response.data;
+        }
     }
 
     const handleChange = async (inputIdentifier, newValue) => {
@@ -47,8 +51,9 @@ export default function ExpenseProvider({children}) {
         });
     }
 
-    const saveExpenseHandler = async () => {
+    const saveExpenseHandler = async (userId) => {
         try {
+            expense.userId = userId;
             await expenseService.saveExpense(expense);
             setDataChanged(!dataChanged);
             return "Expense saved successfully";
@@ -60,7 +65,7 @@ export default function ExpenseProvider({children}) {
 
     const setExpenseHandler = (id) => {
         expenseService.getExpense(id)
-            .then(r => setExpense(r))
+            .then(r => setExpense(r.data))
             .catch(e => console.error(e));
     }
 
@@ -75,20 +80,18 @@ export default function ExpenseProvider({children}) {
         }
     }
 
-    const ctxValue = {
-        expense: expense,
-        expenses: expenses,
-        dataChanged: dataChanged,
-        setExpense: setExpenseHandler,
-        saveExpense: saveExpenseHandler,
-        updateExpense: handleChange,
-        deleteExpense: deleteExpenseHandler,
-        getLatestExpenses: getLatestExpensesHandler,
-        getSumOfMonthlyExpenses: getSumOfMonthlyExpensesHandler,
-    }
-
     return (
-        <ExpenseContext.Provider value={ctxValue}>
+        <ExpenseContext.Provider value={{
+            expense: expense,
+            expenses: expenses,
+            dataChanged: dataChanged,
+            setExpense: setExpenseHandler,
+            saveExpense: saveExpenseHandler,
+            updateExpense: handleChange,
+            deleteExpense: deleteExpenseHandler,
+            getLatestExpenses: getLatestExpensesHandler,
+            getSumOfMonthlyExpenses: getSumOfMonthlyExpensesHandler
+        }}>
             {children}
         </ExpenseContext.Provider>
     );

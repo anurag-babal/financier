@@ -1,8 +1,10 @@
 import {useContext, useEffect, useState} from "react";
 import {ExpenseContext} from "../store/expense-context";
+import {AuthContext} from "../store/auth-context";
 
 const Dashboard = () => {
     const {getSumOfMonthlyExpenses, dataChanged} = useContext(ExpenseContext);
+    const {userId} = useContext(AuthContext);
 
     const [sumOfMonthlyExpenses, setSumOfMonthlyExpenses] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -15,8 +17,8 @@ const Dashboard = () => {
 
     useEffect(() => {
         setLoading(true);
-        getSumOfMonthlyExpenses(month, year)
-            .then(r => setSumOfMonthlyExpenses(r))
+        getSumOfMonthlyExpenses(userId, month + 1, year)
+            .then(r => setSumOfMonthlyExpenses(r.data))
             .catch(e => setError(e))
             .finally(() =>
                 setLoading(false)

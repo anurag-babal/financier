@@ -2,9 +2,11 @@ import {useEffect, useId, useState, useContext} from "react";
 import {Alert} from "./Alert";
 import {getCategories} from "../services/CategoryService";
 import {ExpenseContext} from "../store/expense-context";
+import {AuthContext} from "../store/auth-context";
 
 function ExpenseForm({onClose}) {
     const {expense, saveExpense, updateExpense} = useContext(ExpenseContext);
+    const {userId} = useContext(AuthContext);
 
     const [loading, setLoading] = useState(false);
     const [formErrors, setFormErrors] = useState({});
@@ -13,7 +15,7 @@ function ExpenseForm({onClose}) {
 
     useEffect(() => {
         getCategories()
-            .then(r => setCategories(r))
+            .then(r => setCategories(r.data))
             .catch(e => setFormErrors({general: e.message}));
     }, []);
 
@@ -38,7 +40,7 @@ function ExpenseForm({onClose}) {
         if (validateForm()) {
             setLoading(true);
             setFormErrors({});
-            saveExpense()
+            saveExpense(userId)
                 .then(r => setFormErrors({success: r}))
                 .catch(e => setFormErrors({general: e.message}))
                 .finally(() => {

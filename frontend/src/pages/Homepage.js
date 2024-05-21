@@ -6,7 +6,7 @@ import Expenses from '../components/Expenses';
 import ExpenseForm from "../components/ExpenseForm";
 import Popup from "../components/Popup";
 import {deleteExpense} from "../services/ExpenseService";
-import ExpenseProvider, {ExpenseContext} from "../store/expense-context";
+import ExpenseProvider from "../store/expense-context";
 
 function Homepage() {
     const data = [
