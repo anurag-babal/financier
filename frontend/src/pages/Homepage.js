@@ -5,8 +5,8 @@ import Overview from '../components/Overview';
 import Expenses from '../components/Expenses';
 import ExpenseForm from "../components/ExpenseForm";
 import Popup from "../components/Popup";
-import {deleteExpense} from "../services/ExpenseService";
 import ExpenseProvider from "../store/expense-context";
+import {useNavigate} from "react-router-dom";
 
 function Homepage() {
     const data = [
@@ -23,10 +23,12 @@ function Homepage() {
         {label: 'Nov', value: 12000},
         {label: 'Dec', value: 14000}
     ];
+    const navigate = useNavigate();
 
     const [isPopupOpen, setIsPopupOpen] = React.useState(false);
     const handleOpenPopup = () => setIsPopupOpen(true);
     const handleClosePopup = () => setIsPopupOpen(false);
+    const handleReport = () => navigate('/reports');
 
     return (
         <>
@@ -36,7 +38,7 @@ function Homepage() {
                     <Overview data={data}></Overview>
                     <div className={'my-3'}>
                         <button className='btn btn-primary btn-lg me-2' onClick={handleOpenPopup}>Add Expense</button>
-                        <button className='btn btn-primary btn-lg ms-2' onClick={handleOpenPopup}>Expense Report</button>
+                        <button className='btn btn-primary btn-lg ms-2' onClick={handleReport}>Expense Report</button>
                     </div>
                     <div className={'my-2'}>
                         <Expenses openForm={handleOpenPopup}/>

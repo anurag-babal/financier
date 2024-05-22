@@ -1,23 +1,17 @@
-import {useEffect, useId, useState, useContext} from "react";
+import {useContext, useId, useState} from "react";
 import {Alert} from "./Alert";
-import {getCategories} from "../services/CategoryService";
 import {ExpenseContext} from "../store/expense-context";
 import {AuthContext} from "../store/auth-context";
+import {CategoryContext} from "../store/category-context";
 
 function ExpenseForm({onClose}) {
-    const {expense, saveExpense, updateExpense} = useContext(ExpenseContext);
     const {userId} = useContext(AuthContext);
+    const {categories} = useContext(CategoryContext);
+    const {expense, saveExpense, updateExpense} = useContext(ExpenseContext);
 
     const [loading, setLoading] = useState(false);
     const [formErrors, setFormErrors] = useState({});
-    const [categories, setCategories] = useState([]);
     const categoryDropDownId = useId();
-
-    useEffect(() => {
-        getCategories()
-            .then(r => setCategories(r.data))
-            .catch(e => setFormErrors({general: e.message}));
-    }, []);
 
     const handleChange = (inputIdentifier, newValue) => {
         updateExpense(inputIdentifier, newValue);

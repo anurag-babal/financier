@@ -11,6 +11,14 @@ export async function getExpense(id) {
 }
 
 export async function saveExpense(expense) {
+    if (expense.id) {
+        return updateExpense(expense);
+    }
+    const response = await axios.post('/expenses', expense);
+    return response.data;
+}
+
+export async function updateExpense(expense) {
     const response = await axios.put('/expenses/' + expense.id, expense);
     return response.data;
 }
