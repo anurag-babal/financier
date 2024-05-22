@@ -8,8 +8,10 @@ import com.example.expenseservice.domain.model.Expense;
 import com.example.expenseservice.domain.repository.ExpenseRepository;
 import com.example.expenseservice.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -55,9 +57,24 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
                 .toList();
     }
 
-    public List<Expense> findAllByUserIdAndCategory(String userId, Long categoryId) {
+    @Override
+    public List<Expense> findAllByUserIdPageable(String userId, Pageable pageable) {
+        return expenseEntityDao.findAllByUserId(userId, pageable).stream()
+                .map(this::mapToExpense)
+                .toList();
+    }
+
+    public List<Expense> findAllByUserIdAndCategory(String userId, Long categoryId, Pageable pageable) {
         CategoryEntity categoryEntity = categoryEntityDao.findById(categoryId).orElse(null);
-        return expenseEntityDao.findAllByUserIdAndCategoryEntity(userId, categoryEntity).stream()
+        return expenseEntityDao.findAllByUserIdAndCategoryEntity(userId, categoryEntity, pageable).stream()
+                .map(this::mapToExpense)
+                .toList();
+    }
+
+    public List<Expense> findAllByUserIdAndMonthAndYear(String userId, String month, String year) {
+        LocalDate startDate = LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        return expenseEntityDao.findAllByUserIdAndDateBetween(userId, startDate, endDate).stream()
                 .map(this::mapToExpense)
                 .toList();
     }
@@ -95,7 +112,6 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
     private Expense mapToExpense(ExpenseEntity expenseEntity) {
         return Expense.builder()
                 .id(expenseEntity.getId())
-                .accountId(expenseEntity.getAccountId())
                 .userId(expenseEntity.getUserId())
                 .category(mapToCategoryName(expenseEntity.getCategoryEntity().getId()))
                 .amount(expenseEntity.getAmount())
@@ -110,7 +126,6 @@ public class ExpenseRepositoryImpl implements ExpenseRepository {
 
     private ExpenseEntity mapToExpenseEntity(Expense expense) {
         ExpenseEntity expenseEntity = new ExpenseEntity();
-        expenseEntity.setAccountId(expense.getAccountId());
         expenseEntity.setUserId(expense.getUserId());
         expenseEntity.setAmount(expense.getAmount());
         expenseEntity.setDate(expense.getDate());

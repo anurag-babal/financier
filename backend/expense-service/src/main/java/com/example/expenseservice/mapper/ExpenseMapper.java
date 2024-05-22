@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 public class ExpenseMapper {
     public Expense toExpense(ExpenseCreateRequestDto expenseCreateRequestDto) {
         return Expense.builder()
-                .accountId(expenseCreateRequestDto.getAccountId())
                 .userId(expenseCreateRequestDto.getUserId())
                 .category(expenseCreateRequestDto.getCategory())
                 .description(expenseCreateRequestDto.getDescription())
@@ -24,7 +23,6 @@ public class ExpenseMapper {
     public ExpenseCreateResponseDto toExpenseCreateResponseDto(Expense expense) {
         return ExpenseCreateResponseDto.builder()
                 .id(expense.getId())
-                .accountId(expense.getAccountId())
                 .userId(expense.getUserId())
                 .category(expense.getCategory())
                 .description(expense.getDescription())

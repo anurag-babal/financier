@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     public User mapToUser(UserCreateRequestDto userCreateRequestDto) {
         User user = new User();
+        user.setLoginId(userCreateRequestDto.getLoginId());
         user.setFirstName(userCreateRequestDto.getFirstName());
         user.setMiddleName(userCreateRequestDto.getMiddleName());
         user.setLastName(userCreateRequestDto.getLastName());
@@ -25,6 +26,7 @@ public class UserMapper {
     public User mapUpdateRequestToUser(UserUpdateRequestDto userUpdateRequestDto) {
         User user = new User();
         user.setId(userUpdateRequestDto.getId());
+        user.setLoginId(userUpdateRequestDto.getLoginId());
         user.setFirstName(userUpdateRequestDto.getFirstName());
         user.setMiddleName(userUpdateRequestDto.getMiddleName());
         user.setLastName(userUpdateRequestDto.getLastName());
@@ -37,6 +39,7 @@ public class UserMapper {
     public UserCreateResponseDto mapToUserCreateResponseDto(User user) {
         UserCreateResponseDto userCreateResponseDto = new UserCreateResponseDto();
         userCreateResponseDto.setId(user.getId());
+        userCreateResponseDto.setLoginId(user.getLoginId());
         userCreateResponseDto.setFirstName(user.getFirstName());
         userCreateResponseDto.setMiddleName(user.getMiddleName());
         userCreateResponseDto.setLastName(user.getLastName());
@@ -48,6 +51,7 @@ public class UserMapper {
 
     public UserDetailsResponseDto mapToUserDetailsResponseDto(User user) {
         UserDetailsResponseDto userDetailsResponseDto = new UserDetailsResponseDto();
+        userDetailsResponseDto.setLoginId(user.getLoginId());
         userDetailsResponseDto.setId(user.getId());
         userDetailsResponseDto.setFirstName(user.getFirstName());
         userDetailsResponseDto.setMiddleName(user.getMiddleName());

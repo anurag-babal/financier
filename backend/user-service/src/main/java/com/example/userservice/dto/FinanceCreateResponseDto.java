@@ -7,6 +7,6 @@ import lombok.Data;
 public class FinanceCreateResponseDto {
     private int id;
     private int userId;
-    private int budget;
-    private int savings;
+    private double budget;
+    private double savings;
 }

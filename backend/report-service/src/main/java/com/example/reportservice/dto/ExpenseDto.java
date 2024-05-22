@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-public class ExpenseResponseDto {
+public class ExpenseDto {
     private Long id;
     private String userId;
     private String category;

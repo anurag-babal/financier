@@ -16,6 +16,10 @@ public class UserEntity {
     @Column(name = "id")
     private int id;
 
+    @NotBlank(message = "Login ID is mandatory")
+    @Column(nullable = false, unique = true)
+    private String loginId;
+
     @NotBlank(message = "First name is mandatory")
     @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;

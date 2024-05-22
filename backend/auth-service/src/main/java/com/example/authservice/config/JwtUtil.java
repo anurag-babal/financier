@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.authservice.domain.model.Login;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +16,13 @@ public class JwtUtil {
     private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
     private final String ISSUER = "issuer";
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Login login) {
         long EXPIRATION_TIME = 1000 * 60 * 60 * 10;
         return JWT.create()
-                .withSubject(userDetails.getUsername())
+                .withSubject(login.getUsername())
+                .withClaim("userId", login.getUserId())
                 .withIssuer(ISSUER)
-                .withClaim("roles", userDetails.getAuthorities().toString())
+                .withClaim("roles", login.getRoles().toString())
                 .withIssuedAt(new Date(System.currentTimeMillis()))
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(algorithm);

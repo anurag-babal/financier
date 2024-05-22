@@ -10,12 +10,20 @@ import org.springframework.stereotype.Service;
 public class FinanceService {
     private final FinanceRepository finRepo;
 
-    public Finance addFinanceDetails(Finance fin) { return finRepo.addFinanceDetails(fin); }
+    public Finance addFinanceDetails(Finance fin) {
+        return finRepo.addFinanceDetails(fin);
+    }
 
-    public Finance getFinanceDetails(Finance fin) { return finRepo.getFinanceDetails(fin); }
+    public Finance getFinanceDetails(Finance fin) {
+        return finRepo.getFinanceDetails(fin);
+    }
 
-    public Finance updateFinanceDetails(Finance fin) { return finRepo.updateFinanceDetails(fin); }
+    public Finance updateFinanceDetails(int id, Finance finance) {
+        return finRepo.updateFinanceDetails(id, finance);
+    }
 
-    public boolean deleteFinanceDetails(int userId) { return finRepo.deleteFinanceDetails(userId); }
+    public boolean deleteFinanceDetails(int userId) {
+        return finRepo.deleteFinanceDetails(userId);
+    }
 
 }

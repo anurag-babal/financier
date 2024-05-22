@@ -19,18 +19,27 @@ public class GatewayServerApplication {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(p -> p
-                        .path("/api/users/**")
-                        .filters(f -> f
-                                .rewritePath("/api/users/(?<segment>.*)", "/$\\{segment}")
-                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
-                        )
-                        .uri("lb://users-service"))
+                        .path("/api/v1/users/**")
+//                        .filters(f -> f
+//                                .rewritePath("/api/users/(?<segment>.*)", "/$\\{segment}")
+//                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+//                        )
+                        .uri("lb://user-service"))
+                .route(p -> p
+                        .path("/api/v1/auth/**")
+                        .uri("lb://auth-service"))
                 .route(p -> p
                         .path("/api/v1/transactions/**")
-//                        .filters(f -> f
-//                                .rewritePath("/api/v1/transactions/(?<segment>.*)", "/$\\{segment}")
-//                        )
                         .uri("lb://transaction-service"))
+                .route(p -> p
+                        .path("/api/v1/expenses/**")
+                        .uri("lb://expense-service"))
+                .route(p -> p
+                        .path("/api/v1/categories/**")
+                        .uri("lb://expense-service"))
+                .route(p -> p
+                        .path("/api/v1/reports/**")
+                        .uri("lb://report-service"))
                 .build();
     }
 }

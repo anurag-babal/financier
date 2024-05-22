@@ -2,21 +2,31 @@ package com.example.userservice.domain.service;
 
 import com.example.userservice.domain.model.User;
 import com.example.userservice.domain.repositories.UserRepository;
-import com.example.userservice.dto.UserDetailsResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
 
     public User addUser(User user) {
-        return userRepo.addUser(user);
+        return userRepository.addUser(user);
     }
 
-    public User getUser(int id) { return userRepo.getUser(id); }
+    public User getUser(int id) {
+        return userRepository.getUser(id);
+    }
 
-    public User updateUser(User user) { return userRepo.updateUser(user); }
+    public User updateUser(int id, User user) {
+        return userRepository.updateUser(id, user);
+    }
 
-    public boolean deleteUser(int id) { return userRepo.deleteUser(id); }
+    public boolean deleteUser(int id) {
+        return userRepository.deleteUser(id);
+    }
+
+    public User getUserByLoginId(String loginId) {
+        return userRepository.getUserByLoginId(loginId);
+    }
 }

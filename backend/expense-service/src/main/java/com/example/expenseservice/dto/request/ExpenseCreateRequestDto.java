@@ -7,8 +7,6 @@ import lombok.Data;
 
 @Data
 public class ExpenseCreateRequestDto {
-    @NotNull(message = "Account ID can't be blank")
-    private Long accountId;
     @NotBlank(message = "User ID can't be blank")
     private String userId;
     @NotBlank(message = "Category can't be blank")

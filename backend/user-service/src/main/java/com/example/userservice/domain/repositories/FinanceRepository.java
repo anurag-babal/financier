@@ -4,11 +4,11 @@ import com.example.userservice.domain.model.Finance;
 
 public interface FinanceRepository {
 
-    public Finance addFinanceDetails(Finance fin);
+    Finance addFinanceDetails(Finance fin);
 
-    public Finance getFinanceDetails(Finance fin);
+    Finance getFinanceDetails(Finance fin);
 
-    public Finance updateFinanceDetails(Finance fin);
+    Finance updateFinanceDetails(int id, Finance finance);
 
-    public boolean deleteFinanceDetails(int userId);
+    boolean deleteFinanceDetails(int userId);
 }

@@ -21,13 +21,13 @@ public class FinanceController {
         Finance fin = finService.addFinanceDetails(finMapper.mapCreateReqToFinance(financeCreateRequestDto));
         FinanceCreateResponseDto response = finMapper.mapToFinanceCreateResponseDto(fin);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.CREATED)
-                .message("Finance Details Added Successfully")
-                .data(response)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.CREATED,
+                        "Finance Details Created Successfully",
+                        response
+                ), HttpStatus.CREATED
+        );
     }
 
     @PostMapping("/getFinanceDetails")
@@ -35,39 +35,42 @@ public class FinanceController {
         Finance fin = finService.getFinanceDetails(finMapper.mapGetReqToFinance(financeDetailsRequestDto));
         FinanceDetailsResponseDto response = finMapper.mapToFinanceDetailsResponse(fin);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK)
-                .message("Finance Details Fetched Successfully")
-                .data(response)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.OK,
+                        "Finance Details Fetched Successfully",
+                        response
+                ), HttpStatus.OK
+        );
     }
 
-    @PostMapping("/updateFinanceDetails")
-    public ResponseEntity<ResponseDto> updateFinanceDetails(@RequestBody FinanceUpdateRequestDto financeUpdateRequestDto) {
-        Finance fin = finService.updateFinanceDetails(finMapper.mapUpdateReqToFinance(financeUpdateRequestDto));
+    @PostMapping("/updateFinanceDetails/{id}")
+    public ResponseEntity<ResponseDto> updateFinanceDetails(
+            @PathVariable int id,
+            @RequestBody FinanceUpdateRequestDto financeUpdateRequestDto
+    ) {
+        Finance fin = finService.updateFinanceDetails(id, finMapper.mapUpdateReqToFinance(financeUpdateRequestDto));
         FinanceCreateResponseDto response = finMapper.mapToFinanceCreateResponseDto(fin);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK)
-                .message("Finance Details Updated Successfully")
-                .data(response)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.OK,
+                        "Finance Details Updated Successfully",
+                        response
+                ), HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/deleteFinanceDetails/{userId}")
     public ResponseEntity<ResponseDto> deleteFinanceDetails(@PathVariable int userId) {
         boolean deleted = finService.deleteFinanceDetails(userId);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK)
-                .message("Finance Details Deleted Successfully")
-                .data(deleted)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.OK,
+                        "Finance Details Deleted Successfully",
+                        deleted
+                ), HttpStatus.OK
+        );
     }
 }

@@ -17,59 +17,60 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseDto addUser(@RequestBody UserCreateRequestDto userCreateRequestDto) {
-        User user = userService.addUser(userMapper.mapToUser(userCreateRequestDto));
-
+    public ResponseEntity<ResponseDto> addUser(@RequestBody UserCreateRequestDto userCreateRequestDto) {
+        User user = userMapper.mapToUser(userCreateRequestDto);
+        user = userService.addUser(user);
         UserCreateResponseDto userCreateResponseDto = userMapper.mapToUserCreateResponseDto(user);
-
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.CREATED)
-                .message("User Added Successfully")
-                .data(userCreateResponseDto)
-                .build();
-
-//        return ResponseEntity.ok(responseDto);
-        return  responseDto;
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.CREATED,
+                        "User Created Successfully",
+                        userCreateResponseDto
+                ), HttpStatus.CREATED
+        );
     }
 
-    @PostMapping("/getUser")
-    public ResponseEntity<ResponseDto> getUser(@RequestBody UserDetailsRequestDto req) {
-        User user = userService.getUser(req.getId());
+    @GetMapping("/{loginId}")
+    public ResponseEntity<ResponseDto> getUser(@PathVariable String loginId) {
+        User user = userService.getUserByLoginId(loginId);
         UserDetailsResponseDto response = userMapper.mapToUserDetailsResponseDto(user);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK)
-                .message("Requested User")
-                .data(response)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.OK,
+                        "User Fetched Successfully",
+                        response
+                ), HttpStatus.OK
+        );
     }
 
-    @PostMapping("/updateUser")
-    public ResponseEntity<ResponseDto> updateUser(@RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-        User user = userService.updateUser(userMapper.mapUpdateRequestToUser(userUpdateRequestDto));
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDto> updateUser(
+            @PathVariable int id,
+            @RequestBody UserUpdateRequestDto userUpdateRequestDto
+    ) {
+        User user = userService.updateUser(id, userMapper.mapUpdateRequestToUser(userUpdateRequestDto));
         UserCreateResponseDto response = userMapper.mapToUserCreateResponseDto(user);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK)
-                .message("User Updated Successfully")
-                .data(response)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.OK,
+                        "User Updated Successfully",
+                        response
+                ), HttpStatus.OK
+        );
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> deleteUser(@PathVariable int id) {
         boolean deleted = userService.deleteUser(id);
 
-        ResponseDto responseDto = ResponseDto.builder()
-                .status(HttpStatus.OK)
-                .message("User Deleted Successfully")
-                .data(deleted)
-                .build();
-
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(
+                new ResponseDto(
+                        HttpStatus.OK,
+                        "User Deleted Successfully",
+                        deleted
+                ), HttpStatus.OK
+        );
     }
 }

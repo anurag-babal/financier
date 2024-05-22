@@ -30,7 +30,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String generateToken(Login login) {
-        return jwtUtil.generateToken(mapLoginToUserDetails(login));
+        return jwtUtil.generateToken(login);
     }
 
     @Override

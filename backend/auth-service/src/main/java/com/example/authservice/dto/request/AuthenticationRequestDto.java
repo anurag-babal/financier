@@ -2,6 +2,7 @@ package com.example.authservice.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
@@ -15,7 +16,7 @@ public record AuthenticationRequestDto(
                 description = "The username of the user",
                 example = "username"
         )
-        @Email(message = "Username is required")
+        @NotBlank(message = "Username is required")
         String username,
 
         @Schema(

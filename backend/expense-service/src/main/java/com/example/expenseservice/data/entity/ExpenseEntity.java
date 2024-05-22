@@ -2,6 +2,7 @@ package com.example.expenseservice.data.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,9 +22,7 @@ public class ExpenseEntity extends BaseEntity {
     @NotNull(message = "User ID is required")
     @Column(nullable = false, updatable = false)
     private String userId;
-    @NotNull(message = "Account ID is required")
-    @Column(nullable = false, updatable = false)
-    private Long accountId;
+    @Size(max = 255, message = "Description is too long")
     @Column(length = 255)
     private String description;
     @NotNull(message = "Amount is required")

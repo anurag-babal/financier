@@ -3,11 +3,13 @@ package com.example.userservice.domain.repositories;
 import com.example.userservice.domain.model.User;
 
 public interface UserRepository {
-    public User addUser(User user);
+    User addUser(User user);
 
-    public User getUser(int id);
+    User getUser(int id);
 
-    public User updateUser(User user);
+    User updateUser(int id, User user);
 
-    public boolean deleteUser(int id);
+    boolean deleteUser(int id);
+
+    User getUserByLoginId(String loginId);
 }

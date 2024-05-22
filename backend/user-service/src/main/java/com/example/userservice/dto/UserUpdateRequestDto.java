@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class UserUpdateRequestDto {
     private int id;
+    @NotBlank(message = "Login ID is mandatory")
+    private String loginId;
     @NotBlank(message = "First name is mandatory")
     private String firstName;
     private String middleName;

@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Builder
 public class Expense {
     private Long id;
-    private Long accountId;
     private String userId;
     private String category;
     private String description;

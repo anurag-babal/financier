@@ -32,7 +32,7 @@ import java.util.Date;
 
 @Tag(name = "Login", description = "Login API")
 @RestController
-@RequestMapping(path = "/v1/auth", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/api/v1/auth", produces = {MediaType.APPLICATION_JSON_VALUE})
 @AllArgsConstructor
 @Validated
 public class LoginController {

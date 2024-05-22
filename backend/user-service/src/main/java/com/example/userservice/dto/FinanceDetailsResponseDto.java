@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class FinanceDetailsResponseDto {
-    private int budget;
-    private int savings;
+    private double budget;
+    private double savings;
 }

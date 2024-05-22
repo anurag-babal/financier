@@ -9,6 +9,8 @@ import java.time.LocalDate;
 
 @Data
 public class UserCreateRequestDto {
+    @NotBlank(message = "Login ID is mandatory")
+    private String loginId;
     @NotBlank(message = "First name is mandatory")
     private String firstName;
     private String middleName;

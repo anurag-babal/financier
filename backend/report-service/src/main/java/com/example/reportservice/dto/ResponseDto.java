@@ -1,2 +1,13 @@
-package com.example.reportservice.dto;public class ResponseDto {
+package com.example.reportservice.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.http.HttpStatus;
+
+@Data
+@AllArgsConstructor
+public class ResponseDto {
+    private HttpStatus status;
+    private String message;
+    private Object data;
 }

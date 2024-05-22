@@ -6,6 +6,6 @@ import lombok.Data;
 public class Finance {
     private int id;
     private int userId;
-    private int budget;
-    private int savings;
+    private double budget;
+    private double savings;
 }

@@ -10,6 +10,6 @@ import java.util.List;
 public class ReportResponseDto {
     private String name;
     private String description;
-    private List<TransactionResponseDto> content;
+    private List<ExpenseDto> content;
     private String createdAt;
 }
