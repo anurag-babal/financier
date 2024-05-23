@@ -15,7 +15,7 @@ pipeline {
     agent any
     environment {
         APP_NAME = 'financier'
-        PUSH_TO_DOCKER_HUB = 'false'
+        PUSH_TO_DOCKER_HUB = 'true'
         DOCKER_COMPOSE_CONFIG = 'default'
         DOCKER_IMAGE_PREFIX = 'anuragbabal/financier'
     }
