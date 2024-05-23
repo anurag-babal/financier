@@ -3,7 +3,7 @@
   tasks:
     - name: Delete the old image
       docker_image:
-        name: "{{ microservice_name }}:*"
+        name: "{{ microservice_name }}:latest"
         state: absent
     - name: Build image for {{ microservice_name }}
       docker_image:
@@ -14,4 +14,4 @@
         state: present
 
   vars:
-    microservices_dir: backend
+    microservices_dir: ../backend
