@@ -1,10 +1,9 @@
 ---
 - hosts: localhost
-  become: true
   tasks:
     - name: Build frontend image
       docker_image:
-        name: "{{ microservice }}:latest"
+        name: "{{ microservice_name }}:latest"
         state: present
         build:
           path: frontend

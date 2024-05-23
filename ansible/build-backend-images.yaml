@@ -3,11 +3,11 @@
   tasks:
     - name: Build image for {{ microservice }}
       docker_image:
-        name: "{{ microservice }}:latest"
+        name: "{{ microservice_name }}:latest"
         state: present
         build:
-          path: "{{ microservices_dir }}/{{ microservice }}"
+          path: "{{ microservices_dir }}/{{ microservice_name }}"
           dockerfile: Dockerfile
 
   vars:
-    microservices_dir: backend # Directory where microservices are located
+    microservices_dir: backend
