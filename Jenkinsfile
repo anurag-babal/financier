@@ -65,6 +65,7 @@ pipeline {
                             for (microservice in microservices) {
                                 sh "docker tag ${microservice} ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
                                 sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
+                            }
                         }
                         sh "docker tag ${frontend} ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
                         sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
