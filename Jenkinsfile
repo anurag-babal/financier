@@ -1,13 +1,13 @@
 // List of microservices
 def microservices = [
     'config-server',
-//     'discovery-server',
-//     'auth-service',
+    'discovery-server',
+    'auth-service',
 //     'user-service',
 //     'report-service',
 //     'expense-service',
 //     'transaction-service',
-//     'gateway-server'
+    'gateway-server'
 ]
 def frontend = 'frontend'
 
@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script {
                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'
-                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d config-server frontend"
+                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d config-server frontend discovery-server auth-service gateway-server"
                 }
             }
         }

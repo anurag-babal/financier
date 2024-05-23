@@ -1,10 +1,9 @@
 ---
 - hosts: localhost
-#  become: true # Uncomment if you need to run as root
   tasks:
     - name: Run mvn test for {{ microservice_name }}
-      command: mvn test -f ../{{ microservices_dir }}/{{ microservice_name }}/pom.xml
+      command: mvn test -f {{ microservices_dir }}/{{ microservice_name }}/pom.xml
       register: mvn_test_result
 
   vars:
-    microservices_dir: backend  # Replace with the directory containing your microservices if it's different
+    microservices_dir: ../backend
