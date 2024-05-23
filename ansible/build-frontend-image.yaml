@@ -6,5 +6,5 @@
         name: "{{ microservice_name }}:latest"
         build:
           path: ../frontend
-          source: build
+        source: build
         state: present

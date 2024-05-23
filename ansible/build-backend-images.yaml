@@ -6,7 +6,7 @@
         name: "{{ microservice_name }}:latest"
         build:
           path: "{{ microservices_dir }}/{{ microservice_name }}"
-          source: build
+        source: build
         state: present
 
   vars:
