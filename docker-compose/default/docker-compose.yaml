@@ -68,7 +68,7 @@ services:
       - "8081:8081"
     environment:
       - SPRING_APPLICATION_NAME=auth-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3307/auth-db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3306/financier_auth_db
     depends_on:
       config-server:
         condition: service_healthy
@@ -87,7 +87,7 @@ services:
       - "8084:8084"
     environment:
       - SPRING_APPLICATION_NAME=expense-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3308/expense-db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3306/financier_expense_db
     depends_on:
       config-server:
         condition: service_healthy
@@ -106,7 +106,7 @@ services:
       - "8082:8082"
     environment:
       - SPRING_APPLICATION_NAME=user-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user-db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/financier_user_db
     depends_on:
       config-server:
         condition: service_healthy
