@@ -1,6 +1,8 @@
 ---
 - name: Deploy microservices to Kubernetes
   hosts: localhost
+  connection: local
+  become: true
 
   tasks:
     - name: Ensure kubectl is available
