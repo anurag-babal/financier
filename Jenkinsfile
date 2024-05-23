@@ -28,9 +28,7 @@ pipeline {
         stage('Run Tests (Backend)') {
             steps {
                 script {
-                    // Loop through each microservice
                     for (microservice in microservices) {
-                        // Execute Ansible playbook
                         sh "ansible-playbook -i ansible/hosts ansible/test.yaml -e microservice_name=${microservice}"
                     }
                 }
@@ -39,9 +37,7 @@ pipeline {
         stage('Run Build (Backend)') {
             steps {
                 script {
-                    // Loop through each microservice
                     for (microservice in microservices) {
-                        // Execute Ansible playbook
                         sh "ansible-playbook -i ansible/hosts ansible/build.yaml -e microservice_name=${microservice}"
                     }
                 }
@@ -69,14 +65,6 @@ pipeline {
                         }
                         sh "docker tag ${frontend} ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
                         sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
-//                         for (microservice in microservices) {
-//                             sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
-//                             -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
-//                             -e microservice_name=${microservice}"""
-//                         }
-//                         sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
-//                             -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
-//                             -e microservice_name=${frontend}"""
                     }
                 }
             }
@@ -84,7 +72,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'  // Default to 'default'
+                    def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'
                     sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d config-server frontend"
                 }
             }

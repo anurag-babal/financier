@@ -1,6 +1,10 @@
 ---
 - hosts: localhost
   tasks:
+    - name: Delete the old image
+      docker_image:
+        name: "{{ microservice_name }}:latest"
+        state: absent
     - name: Build frontend image
       docker_image:
         name: "{{ microservice_name }}:latest"
