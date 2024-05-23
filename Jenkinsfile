@@ -17,6 +17,7 @@ pipeline {
         APP_NAME = 'financier'
         PUSH_TO_DOCKER_HUB = 'true'
         DOCKER_COMPOSE_CONFIG = 'default'
+        DOCKER_HUB_PASSWORD = 'N@Zf7jRfr9@^@m'
         DOCKER_IMAGE_PREFIX = 'anuragbabal/financier'
     }
     stages {
@@ -63,11 +64,11 @@ pipeline {
                     if (env.PUSH_TO_DOCKER_HUB == 'true') {
                         for (microservice in microservices) {
                             sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
-                                --ask-vault-pass
+                                -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
                                 -e microservice_name=${microservice}"""
                         }
                         sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
-                            --ask-vault-pass
+                            -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
                             -e microservice_name=${frontend}"""
                     }
                 }
