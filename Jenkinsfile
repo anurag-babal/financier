@@ -2,12 +2,12 @@
 def microservices = [
 //     'config-server',
 //     'discovery-server',
-    'auth-service',
+//     'auth-service',
 //     'user-service',
 //     'report-service',
 //     'expense-service',
 //     'transaction-service',
-//     'gateway-server'
+    'gateway-server'
 ]
 def frontend = 'frontend'
 

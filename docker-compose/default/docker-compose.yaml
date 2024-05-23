@@ -40,7 +40,6 @@ services:
       - "8072:8072"
     environment:
       - SPRING_APPLICATION_NAME=gateway-server
-      - SPRING_EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = http://discovery-server:8070/eureka/
     depends_on:
       config-server:
         condition: service_started
@@ -48,7 +47,7 @@ services:
         condition: service_started
     extends:
       file: common-config.yaml
-      service: microservice-config-server-config
+      service: microservice-discovery-server-config
 
   auth-service:
     image: "anuragbabal/financier-auth-service:latest"
@@ -58,7 +57,6 @@ services:
     environment:
       - SPRING_APPLICATION_NAME=auth-service
       - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3307/auth_db
-      - SPRING_EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = http://discovery-server:8070/eureka/
     depends_on:
       config-server:
         condition: service_started
@@ -68,7 +66,7 @@ services:
         condition: service_started
     extends:
       file: common-config.yaml
-      service: microservice-config-server-config
+      service: microservice-discovery-server-config
 
   expense-service:
     image: "anuragbabal/financier-expense-service:latest"
@@ -85,7 +83,7 @@ services:
         condition: service_healthy
     extends:
       file: common-config.yaml
-      service: microservice-config-server-config
+      service: microservice-discovery-server-config
 
   user-service:
     image: "anuragbabal/financier-user-service:latest"
@@ -102,7 +100,7 @@ services:
         condition: service_healthy
     extends:
       file: common-config.yaml
-      service: microservice-config-server-config
+      service: microservice-discovery-server-config
 
   report-service:
     image: "anuragbabal/financier-report-service:latest"
@@ -117,7 +115,7 @@ services:
         condition: service_completed_successfully
     extends:
       file: common-config.yaml
-      service: microservice-config-server-config
+      service: microservice-discovery-server-config
 
   auth-db:
     image: "mysql:8.0"
