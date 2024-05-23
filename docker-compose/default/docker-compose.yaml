@@ -148,7 +148,7 @@ services:
       start_period: 10s
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: expenses_db
+      MYSQL_DATABASE: financier_expenses_db
     extends:
       file: common-config.yaml
       service: network-deploy-service
@@ -166,7 +166,7 @@ services:
       start_period: 10s
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: user_db
+      MYSQL_DATABASE: financier_user_db
     extends:
       file: common-config.yaml
       service: network-deploy-service
