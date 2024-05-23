@@ -20,18 +20,15 @@ spring:
           clone-on-start: true
           default-label: master
 
-encrypt:
-  key: yTUohIAB1jYe8uahW9GM4ABvomF3RE3djS0bQLKu9xpl3uUaFZwNh00DbQ1ZzYp2
-
 management:
   endpoints:
     web:
       exposure:
         include: "*"
   health:
-    readinessstate:
+    readiness-state:
       enabled: true
-    livenessstate:
+    liveness-state:
       enabled: true
   endpoint:
     health:

@@ -13,6 +13,12 @@ services:
     container_name: config-server
     ports:
       - "8071:8071"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8071/actuator/health/readiness" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=config-server
     extends:
@@ -24,11 +30,13 @@ services:
     container_name: discovery-server
     ports:
       - "8070:8070"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8070/actuator/health/readiness" ]
     environment:
       - SPRING_APPLICATION_NAME=discovery-server
     depends_on:
       config-server:
-        condition: service_started
+        condition: service_healthy
     extends:
       file: common-config.yaml
       service: microservice-config-server-config
@@ -42,9 +50,9 @@ services:
       - SPRING_APPLICATION_NAME=gateway-server
     depends_on:
       config-server:
-        condition: service_started
+        condition: service_healthy
       discovery-server:
-        condition: service_started
+        condition: service_healthy
     extends:
       file: common-config.yaml
       service: microservice-discovery-server-config
@@ -56,14 +64,14 @@ services:
       - "8081:8081"
     environment:
       - SPRING_APPLICATION_NAME=auth-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3307/auth_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3307/auth-db
     depends_on:
       config-server:
-        condition: service_started
+        condition: service_healthy
       auth-db:
         condition: service_healthy
       discovery-server:
-        condition: service_started
+        condition: service_healthy
     extends:
       file: common-config.yaml
       service: microservice-discovery-server-config
@@ -75,10 +83,12 @@ services:
       - "8084:8084"
     environment:
       - SPRING_APPLICATION_NAME=expense-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3308/expense_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3308/expense-db
     depends_on:
       config-server:
-        condition: service_completed_successfully
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
       expense-db:
         condition: service_healthy
     extends:
@@ -92,10 +102,12 @@ services:
       - "8082:8082"
     environment:
       - SPRING_APPLICATION_NAME=user-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user-db
     depends_on:
       config-server:
-        condition: service_completed_successfully
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
       user-db:
         condition: service_healthy
     extends:
@@ -109,10 +121,11 @@ services:
       - "8085:8085"
     environment:
       - SPRING_APPLICATION_NAME=report-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://report-db:3307/report_db
     depends_on:
       config-server:
-        condition: service_completed_successfully
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     extends:
       file: common-config.yaml
       service: microservice-discovery-server-config

@@ -1,12 +1,12 @@
 // List of microservices
 def microservices = [
-//     'config-server',
-//     'discovery-server',
-//     'auth-service',
+    'config-server',
+    'discovery-server',
+    'auth-service',
     'user-service',
     'report-service',
     'expense-service',
-//     'gateway-server'
+    'gateway-server'
 ]
 def frontend = 'frontend'
 
@@ -48,7 +48,7 @@ pipeline {
                     for (microservice in microservices) {
                         sh "ansible-playbook -i ansible/hosts ansible/build-backend-images.yaml -e microservice_name=${microservice}"
                     }
-//                     sh "ansible-playbook -i ansible/hosts ansible/build-frontend-image.yaml -e microservice_name=${frontend}"
+                    sh "ansible-playbook -i ansible/hosts ansible/build-frontend-image.yaml -e microservice_name=${frontend}"
                 }
             }
         }
@@ -61,8 +61,8 @@ pipeline {
                                 sh "docker tag ${microservice} ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
                                 sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
                             }
-//                             sh "docker tag ${frontend} ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
-//                             sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
+                            sh "docker tag ${frontend} ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
+                            sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
                         }
                     }
                 }
@@ -72,7 +72,7 @@ pipeline {
             steps {
                 script {
                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'
-                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d auth-service"
+                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d"
                 }
             }
         }
