@@ -1,8 +1,6 @@
 ---
 - name: Deploy microservices to Kubernetes
   hosts: localhost
-  become: true
-  become_user: arch
 
   tasks:
     - name: Ensure kubectl is available
@@ -17,6 +15,7 @@
 
     - name: Create a Namespace
       kubernetes.core.k8s:
+        kubeconfig: ~/.kube/config
         name: financier
         api_version: v1
         kind: Namespace
