@@ -16,11 +16,11 @@
       when: kubectl_check.rc != 0
 
     - name: Deploy service 1 (replace with your service details)
-      kubernetes_manifest:
+      kubernetes.core.k8s:
         src: "{{ service_file }}"  # Replace with your service manifest file
         state: present
 
     - name: Deploy deployment 1 (replace with your deployment details)
-      kubernetes_manifest:
+      kubernetes.core.k8s:
         src: "{{ deploy_file }}"  # Replace with your deployment manifest file
         state: present
