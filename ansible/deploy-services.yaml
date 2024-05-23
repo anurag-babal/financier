@@ -1,8 +1,7 @@
 ---
 - name: Deploy microservices to Kubernetes
   hosts: localhost
-  connection: local
-  become: true  # Required for interacting with the Kubernetes API server
+#  become: true  # Required for interacting with the Kubernetes API server
 
   tasks:
     - name: Ensure kubectl is available
