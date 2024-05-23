@@ -1,13 +1,11 @@
 ---
 - hosts: localhost
   tasks:
-    - name: Build image for {{ microservice }}
+    - name: Build image for {{ microservice_name }}
       docker_image:
         name: "{{ microservice_name }}:latest"
+        path: "{{ microservices_dir }}/{{ microservice_name }}"
         state: present
-        build:
-          path: "{{ microservices_dir }}/{{ microservice_name }}"
-          dockerfile: Dockerfile
 
   vars:
     microservices_dir: backend
