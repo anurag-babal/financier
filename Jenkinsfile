@@ -61,13 +61,13 @@ pipeline {
                 script {
                     if (env.PUSH_TO_DOCKER_HUB == 'true') {
                         for (microservice in microservices) {
-                            sh "ansible-playbook -i ansible/hosts ansible/push-images.yaml \\
-                                -e microservice_name=${microservice}"
+                            sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
+                                -e microservice_name=${microservice}"""
                         }
-                        sh "ansible-playbook -i ansible/hosts ansible/push-images.yaml \\
-                            --ask-vault-pass \\
-                            -e microservice_name=${frontend} \\
-                            -e docker_hub_password=@ansible/my_vault.yaml"
+                        sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
+                            --ask-vault-pass
+                            -e microservice_name=${frontend}
+                            -e docker_hub_password=@ansible/my_vault.yaml"""
                     }
                 }
             }
@@ -94,13 +94,13 @@ pipeline {
                     for (microservice in microservices) {
 //                         sh "kubectl apply -f ${env.DEPLOYMENT_DIR}/${microservice}-deployment.yaml"
 //                         sh "kubectl apply -f ${env.SERVICE_DIR}/${microservice}-service.yaml"
-                        sh "ansible-playbook -i ansible/hosts ansible/deploy-services.yaml \\
-                            -e service_file=${env.DEPLOYMENT_DIR}/${microservice}-service.yaml \\
-                            -e deployment_file=${env.DEPLOYMENT_DIR}/${microservice}-deployment.yaml"
+                        sh """ansible-playbook -i ansible/hosts ansible/deploy-services.yaml
+                            -e service_file=${env.DEPLOYMENT_DIR}/${microservice}-service.yaml
+                            -e deployment_file=${env.DEPLOYMENT_DIR}/${microservice}-deployment.yaml"""
                     }
-                    sh "ansible-playbook -i ansible/hosts ansible/deploy-services.yaml \\
-                        -e service_file=${env.DEPLOYMENT_DIR}/frontend-service.yaml \\
-                        -e deployment_file=${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"
+                    sh """ansible-playbook -i ansible/hosts ansible/deploy-services.yaml
+                        -e service_file=${env.DEPLOYMENT_DIR}/frontend-service.yaml
+                        -e deployment_file=${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"""
 //                     sh "kubectl apply -f ${env.DEPLOYMENT_DIR}/frontend-deployment.yaml"
 //                     sh "kubectl apply -f ${env.SERVICE_DIR}/frontend-service.yaml"
                 }
