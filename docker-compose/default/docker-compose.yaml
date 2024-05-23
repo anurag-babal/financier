@@ -126,7 +126,7 @@ services:
       start_period: 10s
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: auth_db
+      MYSQL_DATABASE: financier_auth_db
     extends:
       file: common-config.yaml
       service: network-deploy-service
