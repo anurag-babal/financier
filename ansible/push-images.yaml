@@ -9,10 +9,10 @@
         username: "{{ docker_hub_username }}"
         password: "{{ docker_hub_password }}"
     - name: Tag image for pushing (using docker command)
-      command: docker tag {{ microservice }}:latest {{ docker_hub_image_prefix }}/{{ microservice }}:latest
+      command: docker tag {{ microservice_name }}:latest {{ docker_hub_image_prefix }}/{{ microservice_name }}:latest
     - name: Push Docker image to Docker Hub
       docker_image:
-        name: "{{ docker_hub_image_prefix }}/{{ microservice }}:latest"
+        name: "{{ docker_hub_image_prefix }}/{{ microservice_name }}:latest"
         state: pushed
 
   vars:
