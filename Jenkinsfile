@@ -1,7 +1,7 @@
 // List of microservices
 def microservices = [
     'config-server',
-    'discovery-server',
+//     'discovery-server',
 //     'auth-service',
 //     'user-service',
 //     'report-service',
@@ -9,6 +9,7 @@ def microservices = [
 //     'transaction-service',
 //     'gateway-server'
 ]
+def frontend = 'frontend'
 
 pipeline {
     agent any
