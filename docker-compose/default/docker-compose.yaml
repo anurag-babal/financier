@@ -33,6 +33,37 @@ services:
       file: common-config.yaml
       service: microservice-config-server-config
 
+  gateway-server:
+    image: "anuragbabal/financier-gateway-server:latest"
+    container_name: gateway-server
+    ports:
+      - "8072:8072"
+    environment:
+      - SPRING_APPLICATION_NAME=gateway-server
+    depends_on:
+      config-server:
+        condition: service_completed_successfully
+    extends:
+      file: common-config.yaml
+      service: microservice-config-server-config
+
+  auth-service:
+    image: "anuragbabal/financier-auth-service:latest"
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_APPLICATION_NAME=auth-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3306/auth_db
+    depends_on:
+      config-server:
+        condition: service_completed_successfully
+      auth-db:
+        condition: service_healthy
+    extends:
+      file: common-config.yaml
+      service: microservice-config-server-config
+
   expense-service:
     image: "anuragbabal/financier-expense-service:latest"
     container_name: expense-service
@@ -49,6 +80,56 @@ services:
     extends:
       file: common-config.yaml
       service: microservice-config-server-config
+
+  user-service:
+    image: "anuragbabal/financier-user-service:latest"
+    container_name: user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_APPLICATION_NAME=user-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user_db
+    depends_on:
+      config-server:
+        condition: service_completed_successfully
+      user-db:
+        condition: service_healthy
+    extends:
+      file: common-config.yaml
+      service: microservice-config-server-config
+
+  report-service:
+    image: "anuragbabal/financier-report-service:latest"
+    container_name: report-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_APPLICATION_NAME=report-service
+      - SPRING_DATASOURCE_URL=jdbc:mysql://report-db:3307/report_db
+    depends_on:
+      config-server:
+        condition: service_completed_successfully
+    extends:
+      file: common-config.yaml
+      service: microservice-config-server-config
+
+  auth-db:
+    image: "mysql:8.0"
+    container_name: auth-db
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 10
+      interval: 10s
+      start_period: 10s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: auth_db
+    extends:
+      file: common-config.yaml
+      service: network-deploy-service
 
   expense-db:
     image: "mysql:8.0"
@@ -67,23 +148,6 @@ services:
     extends:
       file: common-config.yaml
       service: network-deploy-service
-
-  user-service:
-    image: "anuragbabal/financier-user-service:latest"
-    container_name: user-service
-    ports:
-      - "8085:8085"
-    environment:
-      - SPRING_APPLICATION_NAME=user-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/user_db
-    depends_on:
-      config-server:
-        condition: service_completed_successfully
-      user-db:
-        condition: service_healthy
-    extends:
-      file: common-config.yaml
-      service: microservice-config-server-config
 
   user-db:
     image: "mysql:8.0"
