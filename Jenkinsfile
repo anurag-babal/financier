@@ -17,7 +17,6 @@ pipeline {
         APP_NAME = 'financier'
         PUSH_TO_DOCKER_HUB = 'true'
         DOCKER_COMPOSE_CONFIG = 'default'
-        DOCKER_HUB_PASSWORD = 'N@Zf7jRfr9@^@m'
         DOCKER_IMAGE_PREFIX = 'anuragbabal/financier'
     }
     stages {
@@ -62,14 +61,21 @@ pipeline {
             steps {
                 script {
                     if (env.PUSH_TO_DOCKER_HUB == 'true') {
-                        for (microservice in microservices) {
-                            sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
-                                -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
-                                -e microservice_name=${microservice}"""
+                        docker.withRegistry('', 'DockerHubCred') {
+                            for (microservice in microservices) {
+                                sh "docker tag ${microservice} ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
+                                sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${microservice}:latest"
                         }
-                        sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
-                            -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
-                            -e microservice_name=${frontend}"""
+                        sh "docker tag ${frontend} ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
+                        sh "docker push ${env.DOCKER_IMAGE_PREFIX}-${frontend}:latest"
+//                         for (microservice in microservices) {
+//                             sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
+//                             -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
+//                             -e microservice_name=${microservice}"""
+//                         }
+//                         sh """ansible-playbook -i ansible/hosts ansible/push-images.yaml
+//                             -e docker_hub_password=${env.DOCKER_HUB_PASSWORD}
+//                             -e microservice_name=${frontend}"""
                     }
                 }
             }
