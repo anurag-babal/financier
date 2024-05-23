@@ -13,9 +13,11 @@
         msg: "kubectl is not installed or not accessible. Please install and configure kubectl."
       when: kubectl_check.rc != 0
 
-    - name: Create a Namespace from K8S YAML File
+    - name: Create a Namespace
       kubernetes.core.k8s:
-        src: "create_namespace.yaml"
+        name: financier
+        api_version: v1
+        kind: Namespace
         state: present
 
     - name: Apply deployments
