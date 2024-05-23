@@ -28,7 +28,7 @@ services:
       - SPRING_APPLICATION_NAME=discovery-server
     depends_on:
       config-server:
-        condition: service_completed_successfully
+        condition: service_started
     extends:
       file: common-config.yaml
       service: microservice-config-server-config
@@ -40,9 +40,12 @@ services:
       - "8072:8072"
     environment:
       - SPRING_APPLICATION_NAME=gateway-server
+      - SPRING_EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = http://discovery-server:8070/eureka/
     depends_on:
       config-server:
-        condition: service_completed_successfully
+        condition: service_started
+      discovery-server:
+        condition: service_started
     extends:
       file: common-config.yaml
       service: microservice-config-server-config
@@ -54,12 +57,15 @@ services:
       - "8081:8081"
     environment:
       - SPRING_APPLICATION_NAME=auth-service
-      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3306/auth_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3307/auth_db
+      - SPRING_EUREKA_CLIENT_SERVICEURL_DEFAULTZONE = http://discovery-server:8070/eureka/
     depends_on:
       config-server:
-        condition: service_completed_successfully
+        condition: service_started
       auth-db:
         condition: service_healthy
+      discovery-server:
+        condition: service_started
     extends:
       file: common-config.yaml
       service: microservice-config-server-config
