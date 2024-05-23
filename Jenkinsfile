@@ -1,19 +1,18 @@
 // List of microservices
 def microservices = [
-    'config-server',
-    'discovery-server',
-    'auth-service',
-    'user-service',
-    'report-service',
-    'expense-service',
-    'gateway-server'
+//     'config-server',
+//     'discovery-server',
+//     'auth-service',
+//     'user-service',
+//     'report-service',
+//     'expense-service',
+//     'gateway-server'
 ]
 def frontend = 'frontend'
 
 pipeline {
     agent any
     environment {
-        APP_NAME = 'financier'
         PUSH_TO_DOCKER_HUB = 'true'
         DOCKER_COMPOSE_CONFIG = 'default'
         DOCKER_IMAGE_PREFIX = 'anuragbabal/financier'
@@ -72,6 +71,7 @@ pipeline {
             steps {
                 script {
                     def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'
+                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml down"
                     sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d"
                 }
             }

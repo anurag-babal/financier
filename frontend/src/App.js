@@ -11,6 +11,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import UserProvider from "./store/user-context";
 import {registerCharts} from "./utils/register-charts";
 import CategoryProvider from "./store/category-context";
+import HelloWorld from "./pages/hello-world";
 
 registerCharts();
 
@@ -22,12 +23,12 @@ function App() {
                     <CategoryProvider>
                         <BrowserRouter>
                             <Routes>
-                                <Route path="login" element={<Login/>}/>
+                                <Route path="/login" element={<Login/>}/>
                                 <Route element={<PrivateRoute/>}>
                                     <Route index element={<Homepage/>}/>
-                                    <Route path="add-expense" element={<ExpenseForm/>}/>
-                                    <Route path="reports" element={<ReportPage/>}/>
+                                    <Route path="/reports" element={<ReportPage/>}/>
                                 </Route>
+                                <Route path="/hello" element={<HelloWorld/>}/>
                                 <Route path="*" element={<PageNotFound/>}/>
                             </Routes>
                         </BrowserRouter>
