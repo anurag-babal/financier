@@ -4,7 +4,9 @@
     - name: Build image for {{ microservice_name }}
       docker_image:
         name: "{{ microservice_name }}:latest"
-        path: "{{ microservices_dir }}/{{ microservice_name }}"
+        build:
+          path: "{{ microservices_dir }}/{{ microservice_name }}"
+          source: build
         state: present
 
   vars:

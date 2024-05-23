@@ -4,7 +4,7 @@
     - name: Build frontend image
       docker_image:
         name: "{{ microservice_name }}:latest"
-        state: present
         build:
-          path: frontend
-          dockerfile: Dockerfile
+          path: ../frontend
+          source: build
+        state: present
