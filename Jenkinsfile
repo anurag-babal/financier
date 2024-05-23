@@ -86,7 +86,7 @@ pipeline {
 //         }
         stage('Deploying to Kubernetes') {
             environment {
-                ROOT_DIR = 'kubernetes'
+                ROOT_DIR = '../kubernetes'
                 DEPLOYMENT_DIR = "${ROOT_DIR}/deploy"
                 SERVICE_DIR = "${ROOT_DIR}/service"
             }

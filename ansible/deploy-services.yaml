@@ -1,7 +1,6 @@
 ---
 - name: Deploy microservices to Kubernetes
   hosts: localhost
-#  become: true  # Required for interacting with the Kubernetes API server
 
   tasks:
     - name: Ensure kubectl is available
@@ -14,12 +13,18 @@
         msg: "kubectl is not installed or not accessible. Please install and configure kubectl."
       when: kubectl_check.rc != 0
 
-    - name: Deploy service 1 (replace with your service details)
+    - name: Create a Namespace from K8S YAML File
       kubernetes.core.k8s:
-        src: "{{ service_file }}"  # Replace with your service manifest file
+        src: "create_namespace.yaml"
         state: present
 
-    - name: Deploy deployment 1 (replace with your deployment details)
+    - name: Apply deployments
       kubernetes.core.k8s:
-        src: "{{ deploy_file }}"  # Replace with your deployment manifest file
+        src: "{{ deploy_file }}"
         state: present
+
+    - name: Apply services
+      kubernetes.core.k8s:
+        src: "{{ service_file }}"
+        state: present
+

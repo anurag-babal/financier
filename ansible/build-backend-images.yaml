@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
   tasks:
     - name: Build image for {{ microservice }}
       docker_image:

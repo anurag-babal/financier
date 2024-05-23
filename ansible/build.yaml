@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
 #  become: true  # Optional, depends on your Maven setup
   tasks:
     - name: Run mvn clean package for {{ microservice_name }}
