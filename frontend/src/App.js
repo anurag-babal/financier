@@ -28,7 +28,6 @@ function App() {
                                     <Route index element={<Homepage/>}/>
                                     <Route path="/reports" element={<ReportPage/>}/>
                                 </Route>
-                                <Route path="/hello" element={<HelloWorld/>}/>
                                 <Route path="*" element={<PageNotFound/>}/>
                             </Routes>
                         </BrowserRouter>
