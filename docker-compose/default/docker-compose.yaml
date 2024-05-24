@@ -309,7 +309,7 @@ services:
   backend:
     image: grafana/loki:3.0.0
     volumes:
-      - ./loki-config.yaml:/etc/loki/config.yaml
+      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
     ports:
       - "3100"
       - "7946"
