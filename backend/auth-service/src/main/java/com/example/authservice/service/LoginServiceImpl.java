@@ -5,7 +5,13 @@ import com.example.authservice.data.repository.LoginRepository;
 import com.example.authservice.domain.model.Login;
 import com.example.authservice.domain.model.Role;
 import com.example.authservice.domain.service.LoginService;
+import com.example.authservice.dto.request.UserCreateRequestDto;
+import com.example.authservice.dto.response.UserDto;
+import com.example.authservice.dto.response.UserResponseDto;
+import com.example.authservice.service.client.UserFeignClient;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +29,7 @@ public class LoginServiceImpl implements LoginService {
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private UserFeignClient userFeignClient;
 
     @Override
     public Login getLoginByUsername(String username) {
@@ -34,14 +42,29 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public String registerUser(String username, String password) {
+    public Login registerUser(String username, String password) {
         Login login = Login.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .active(true)
                 .roles(List.of(Role.ROLE_USER))
                 .build();
-        return generateToken(loginRepository.saveLogin(login));
+        return loginRepository.saveLogin(login);
+    }
+
+    @Override
+    @Transactional
+    public UserDto registerUserDetails(String username, String password, UserCreateRequestDto userCreateRequestDto) {
+        Login login = registerUser(username, password);
+        userCreateRequestDto.setLoginId(login.getUserId());
+        ResponseEntity<UserResponseDto> response = userFeignClient.addUser(userCreateRequestDto);
+        return Objects.requireNonNull(response.getBody()).getData();
+    }
+
+    @Override
+    public UserDto getUserDetails(String loginId) {
+        ResponseEntity<UserResponseDto> response = userFeignClient.getUser(loginId);
+        return Objects.requireNonNull(response.getBody()).getData();
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.example.userservice.dto;
 
-import lombok.Builder;
 import lombok.Data;
 
-//@Builder
 @Data
 public class UserCreateResponseDto {
     private int id;
@@ -14,4 +12,5 @@ public class UserCreateResponseDto {
     private String phoneNumber;
     private String email;
     private String dateOfBirth;
+    private Double budget;
 }

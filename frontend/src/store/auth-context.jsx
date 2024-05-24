@@ -1,4 +1,4 @@
-import * as loginService from "../services/login-service";
+import * as authService from "../services/auth-service";
 import {jwtDecode} from "jwt-decode";
 import {createContext, useEffect, useState} from "react";
 
@@ -40,7 +40,7 @@ export default function AuthProvider({children}) {
 
     const loginHandler = async (username, password) => {
         try {
-            const response = await loginService.login(username, password)
+            const response = await authService.login(username, password)
             const token = response.data.token;
             decodeToken(token);
             localStorage.setItem('token', token);
@@ -52,7 +52,7 @@ export default function AuthProvider({children}) {
 
     const logoutHandler = async () => {
         try {
-            await loginService.logout();
+            await authService.logout();
             setIsAuthenticated(false);
             localStorage.removeItem('token');
             return "Logout successful";
@@ -62,9 +62,9 @@ export default function AuthProvider({children}) {
         }
     }
 
-    const registerHandler = async (username, password) => {
+    const registerHandler = async (user) => {
         try {
-            await loginService.register(username, password);
+            await authService.register(user);
             return "Registration successful";
         } catch (error) {
             console.error('Error while registering', error);

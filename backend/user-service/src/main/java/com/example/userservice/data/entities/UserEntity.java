@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -41,4 +43,7 @@ public class UserEntity {
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+
+    @Column
+    private BigDecimal budget;
 }

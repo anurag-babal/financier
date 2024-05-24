@@ -20,6 +20,7 @@ public class UserMapper {
         user.setPhoneNumber(userCreateRequestDto.getPhoneNumber());
         user.setEmail(userCreateRequestDto.getEmail());
         user.setDateOfBirth(DateFormatter.stringToLocalDate(userCreateRequestDto.getDateOfBirth()));
+        user.setBudget(userCreateRequestDto.getBudget() == null ? 0.0 : userCreateRequestDto.getBudget());
         return user;
     }
 
@@ -33,6 +34,7 @@ public class UserMapper {
         user.setPhoneNumber(userUpdateRequestDto.getPhoneNumber());
         user.setEmail(userUpdateRequestDto.getEmail());
         user.setDateOfBirth(DateFormatter.stringToLocalDate(userUpdateRequestDto.getDateOfBirth()));
+        user.setBudget(userUpdateRequestDto.getBudget());
         return user;
     }
 
@@ -46,6 +48,7 @@ public class UserMapper {
         userCreateResponseDto.setPhoneNumber(user.getPhoneNumber());
         userCreateResponseDto.setEmail(user.getEmail());
         userCreateResponseDto.setDateOfBirth(DateFormatter.localDateToString(user.getDateOfBirth()));
+        userCreateResponseDto.setBudget(user.getBudget());
         return userCreateResponseDto;
     }
 
@@ -59,6 +62,7 @@ public class UserMapper {
         userDetailsResponseDto.setEmail(user.getEmail());
         userDetailsResponseDto.setPhoneNumber(user.getPhoneNumber());
         userDetailsResponseDto.setDateOfBirth(user.getDateOfBirth());
+        userDetailsResponseDto.setBudget(user.getBudget());
         return userDetailsResponseDto;
     }
 }

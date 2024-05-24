@@ -1,12 +1,9 @@
-package com.example.userservice.domain.model;
+package com.example.authservice.dto.response;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 @Data
-public class User {
+public class UserDto {
     private int id;
     private String loginId;
     private String firstName;
@@ -14,6 +11,6 @@ public class User {
     private String lastName;
     private String phoneNumber;
     private String email;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private Double budget;
 }

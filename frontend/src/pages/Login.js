@@ -85,7 +85,7 @@ function Login() {
                                 <p className="or">&nbsp;&nbsp;Or&nbsp;&nbsp;</p>
                                 <hr className="horizontal-line"/>
                             </div>
-                            <Link to="/" className="signup-btn">
+                            <Link to="/register" className="signup-btn">
                                 Sign Up
                             </Link>
                         </div>

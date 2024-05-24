@@ -15,9 +15,9 @@ export async function logout() {
     }
 }
 
-export async function register(username, password) {
+export async function register(user) {
     try {
-        const response = await axios.post('/register', {username, password});
+        const response = await axios.post('/auth/register', user);
         return response.data;
     } catch (error) {
         console.error('Error while registering', error);

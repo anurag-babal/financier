@@ -1,13 +1,13 @@
-package com.example.userservice.dto;
+package com.example.authservice.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class UserUpdateRequestDto {
-    private int id;
+public class UserCreateRequestDto {
     @NotBlank(message = "Login ID is mandatory")
     private String loginId;
     @NotBlank(message = "First name is mandatory")

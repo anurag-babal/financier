@@ -14,4 +14,5 @@ public class UserDetailsResponseDto {
     private String phoneNumber;
     private String email;
     private LocalDate dateOfBirth;
+    private Double budget;
 }

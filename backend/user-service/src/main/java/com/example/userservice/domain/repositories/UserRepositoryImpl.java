@@ -7,6 +7,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+
 @Repository
 @AllArgsConstructor
 public class UserRepositoryImpl implements UserRepository{
@@ -61,6 +63,7 @@ public class UserRepositoryImpl implements UserRepository{
         userEntity.setEmail(user.getEmail());
         userEntity.setPhoneNumber(user.getPhoneNumber());
         userEntity.setDateOfBirth(user.getDateOfBirth());
+        userEntity.setBudget(BigDecimal.valueOf(user.getBudget()));
 
         return userEntity;
     }
@@ -75,6 +78,7 @@ public class UserRepositoryImpl implements UserRepository{
         user.setEmail(userEntity.getEmail());
         user.setPhoneNumber(userEntity.getPhoneNumber());
         user.setDateOfBirth(userEntity.getDateOfBirth());
+        user.setBudget(userEntity.getBudget().doubleValue());
 
         return user;
     }

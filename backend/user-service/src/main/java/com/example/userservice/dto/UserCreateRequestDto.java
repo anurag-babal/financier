@@ -22,4 +22,5 @@ public class UserCreateRequestDto {
     private String email;
     @Pattern(regexp = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", message = "Date of birth should be in yyyy-MM-dd format")
     private String dateOfBirth;
+    private Double budget;
 }

@@ -1,12 +1,16 @@
 package com.example.authservice.controller;
 
+import com.example.authservice.domain.model.Login;
 import com.example.authservice.domain.service.LoginService;
 import com.example.authservice.dto.RoleCreateRequestDto;
 import com.example.authservice.dto.request.AuthenticationRequestDto;
 import com.example.authservice.dto.request.RegisterUserRequestDto;
+import com.example.authservice.dto.request.UserCreateRequestDto;
 import com.example.authservice.dto.response.AuthenticationResponseDto;
 import com.example.authservice.dto.response.ErrorResponseDto;
 import com.example.authservice.dto.response.ResponseDto;
+import com.example.authservice.dto.response.UserDto;
+import com.example.authservice.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,6 +41,7 @@ import java.util.Date;
 @Validated
 public class LoginController {
 
+    private final UserMapper userMapper;
     private final LoginService loginService;
     private final AuthenticationManager authenticationManager;
 
@@ -62,12 +67,14 @@ public class LoginController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = loginService.generateToken(loginService.getLoginByUsername(request.username()));
+        Login login = loginService.getLoginByUsername(request.username());
+        UserDto userDto = loginService.getUserDetails(login.getUserId());
+        String token = loginService.generateToken(login);
         return ResponseEntity.ok(
                 ResponseDto.builder()
                         .status(HttpStatus.OK.getReasonPhrase())
                         .message("User authenticated successfully")
-                        .data(new AuthenticationResponseDto(token))
+                        .data(new AuthenticationResponseDto(token, userDto))
                         .timestamp(new Date().toString())
                         .build()
         );
@@ -88,8 +95,11 @@ public class LoginController {
     })
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponseDto> registerUser(@Valid @RequestBody RegisterUserRequestDto request) {
-        String token = loginService.registerUser(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(new AuthenticationResponseDto(token));
+        UserCreateRequestDto userCreateRequestDto = userMapper.mapToUserCreateRequest(request);
+        UserDto userDto = loginService.registerUserDetails(request.getUsername(), request.getPassword(), userCreateRequestDto);
+        Login login = loginService.getLoginByUsername(request.getUsername());
+        String token = loginService.generateToken(login);
+        return ResponseEntity.ok(new AuthenticationResponseDto(token, userDto));
     }
 
     @PostMapping("/role")
