@@ -277,7 +277,7 @@ services:
     volumes:
       - ../observability/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
     extends:
-      file: common-config.yml
+      file: common-config.yaml
       service: network-deploy-service
 
   grafana:
