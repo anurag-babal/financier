@@ -6,10 +6,11 @@ const BarChart = ({data}) => {
         plugins: {
             legend: {
                 position: "top",
+                display: false
             },
             title: {
                 display: true,
-                text: "Bar Chart: Quarterly Revenue & Expenses Comparison",
+                text: "Bar Chart: Monthly expenses",
             },
         },
     }

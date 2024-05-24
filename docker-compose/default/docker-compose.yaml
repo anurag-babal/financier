@@ -15,8 +15,8 @@ services:
       - "8071:8071"
     healthcheck:
       test: "wget -qO- http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 10
       start_period: 10s
     environment:
@@ -32,8 +32,8 @@ services:
       - "8070:8070"
     healthcheck:
       test: "wget -qO- http://localhost:8070/actuator/health/readiness | grep UP || exit 1"
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 10
       start_period: 10s
     environment:
@@ -50,6 +50,12 @@ services:
     container_name: gateway-server
     ports:
       - "8072:8072"
+    healthcheck:
+      test: "wget -qO- http://localhost:8072/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=gateway-server
     depends_on:
@@ -66,6 +72,12 @@ services:
     container_name: auth-service
     ports:
       - "8081:8081"
+    healthcheck:
+      test: "wget -qO- http://localhost:8081/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=auth-service
       - SPRING_DATASOURCE_URL=jdbc:mysql://auth-db:3306/financier_auth_db
@@ -85,6 +97,12 @@ services:
     container_name: expense-service
     ports:
       - "8084:8084"
+    healthcheck:
+      test: "wget -qO- http://localhost:8084/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=expense-service
       - SPRING_DATASOURCE_URL=jdbc:mysql://expense-db:3306/financier_expense_db
@@ -104,6 +122,12 @@ services:
     container_name: user-service
     ports:
       - "8082:8082"
+    healthcheck:
+      test: "wget -qO- http://localhost:8082/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=user-service
       - SPRING_DATASOURCE_URL=jdbc:mysql://user-db:3306/financier_user_db
@@ -123,6 +147,12 @@ services:
     container_name: report-service
     ports:
       - "8085:8085"
+    healthcheck:
+      test: "wget -qO- http://localhost:8085/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     environment:
       - SPRING_APPLICATION_NAME=report-service
     depends_on:
@@ -139,6 +169,8 @@ services:
     container_name: auth-db
     ports:
       - "3307:3306"
+    volumes:
+      - ./.data/auth-db-vm:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 3s
@@ -157,6 +189,8 @@ services:
     container_name: expense-db
     ports:
       - "3308:3306"
+    volumes:
+      - ./.data/expense-db-vm:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 3s
@@ -175,6 +209,8 @@ services:
     container_name: user-db
     ports:
       - "3309:3306"
+    volumes:
+      - ./.data/user-db-vm:/var/lib/mysql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 3s
@@ -296,7 +332,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ../observability/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ../observability/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/ds.yaml
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1" ]
       interval: 10s

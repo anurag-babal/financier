@@ -1,7 +1,7 @@
 import React from 'react'
 import '../css/Overview.css'
-import BarGraph from '../components/BarGraph';
 import Dashboard from "./Deashboard";
+import BarChart from "../graphs/Bar";
 
 function Overview({data}) {
 
@@ -19,7 +19,8 @@ function Overview({data}) {
                             </div>
                             <div className={'col-6'}>
                                 <div className={'graph'}>
-                                    <BarGraph title="Expenses" data={data}/>
+                                    {/*<BarGraph title="Expenses" data={data}/>*/}
+                                    <BarChart data={data}/>
                                 </div>
                             </div>
                         </div>

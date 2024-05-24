@@ -1,5 +1,4 @@
 import './App.css';
-import React from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Login from './pages/Login';
 import Homepage from './pages/Homepage';
@@ -11,6 +10,7 @@ import UserProvider from "./store/user-context";
 import {registerCharts} from "./utils/register-charts";
 import CategoryProvider from "./store/category-context";
 import Signup from "./pages/signup";
+import Logout from "./pages/logout";
 
 registerCharts();
 
@@ -28,6 +28,7 @@ function App() {
                                     <Route index element={<Homepage/>}/>
                                     <Route path="/reports" element={<ReportPage/>}/>
                                 </Route>
+                                <Route path="/logout" element={<Logout/>}/>
                                 <Route path="*" element={<PageNotFound/>}/>
                             </Routes>
                         </BrowserRouter>

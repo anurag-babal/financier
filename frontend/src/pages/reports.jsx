@@ -8,7 +8,7 @@ import {CategoryContext} from "../store/category-context";
 import * as reportService from "../services/report-service";
 import {AuthContext} from "../store/auth-context";
 
-const months = [
+export const months = [
     'All', 'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
@@ -65,7 +65,12 @@ export default function ReportPage() {
             case 'Doughnut':
                 return <DoughnutChart data={reportData}/>;
             case 'Pie':
-                return <PieChart data={reportData}/>;
+                if (selectedCategory === 'all' && selectedMonth === 'All' && selectedYear !== 'All') {
+                    const data2 = prepareData(reportData);
+                    console.log('report chart data:', data2)
+                    return <PieChart data={data2}/>;
+                }
+                break;
             default:
                 return null;
         }
@@ -73,7 +78,7 @@ export default function ReportPage() {
 
     return (
         <div className="container">
-            <h1>Report Selection</h1>
+            <h1>Reports</h1>
             <Row>
                 <Col sm={3}>
                     <Form.Select name="month" value={selectedMonth} onChange={handleSelectChange}>
@@ -120,7 +125,7 @@ export default function ReportPage() {
     );
 };
 
-function prepareData(reportData) {
+export function prepareData(reportData) {
     if (!reportData) return null;
 
     const labels = reportData.content.map((month) => month.groupBy);

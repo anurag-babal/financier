@@ -19,7 +19,7 @@ export default function AuthProvider({children}) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = window.localStorage.getItem('token');
         if (token) {
             decodeToken(token);
         }
@@ -43,7 +43,7 @@ export default function AuthProvider({children}) {
             const response = await authService.login(username, password)
             const token = response.data.token;
             decodeToken(token);
-            localStorage.setItem('token', token);
+            window.localStorage.setItem('token', token);
             return "Login successful";
         } catch (error) {
             throw error.response.data;
@@ -52,9 +52,9 @@ export default function AuthProvider({children}) {
 
     const logoutHandler = async () => {
         try {
-            await authService.logout();
+            window.localStorage.removeItem('token');
             setIsAuthenticated(false);
-            localStorage.removeItem('token');
+            await authService.logout();
             return "Logout successful";
         } catch (error) {
             console.error('Error while logging out', error);
