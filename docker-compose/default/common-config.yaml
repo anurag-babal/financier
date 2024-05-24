@@ -1,7 +1,7 @@
 services:
   network-deploy-service:
     networks:
-      - backend
+      - financier
 
   microservice-base-config:
     extends:
