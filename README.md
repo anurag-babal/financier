@@ -4,4 +4,4 @@
 - It also helps you set budgets and financial goals. 
 - The app is designed to be easy to use and intuitive.
 - It has a clean and simple web interface that makes it easy to use.
-- It is also available for Android devices.
+- It is also available for Android devices
