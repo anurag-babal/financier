@@ -14,14 +14,14 @@ import {months, prepareData} from "./reports";
 
 function Homepage() {
     const navigate = useNavigate();
-    const {getSumOfMonthlyExpenses} = useContext(ExpenseContext);
     const {userId} = useContext(AuthContext);
-    const {user} = useContext(UserContext);
 
     const today = new Date();
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [data, setData] = useState(null);
+
+    const chartData = prepareData(data);
 
     const fetchReportData = async () => {
         reportService
@@ -33,7 +33,6 @@ function Homepage() {
             )
             .then((r) => {
                 setData(r.data);
-                console.log('Report data:', r.data)
             })
             .catch((error) => {
                 console.log('Error fetching report data:', error)
@@ -53,7 +52,7 @@ function Homepage() {
             <Header></Header>
             <ExpenseProvider>
                 <div className={'container my-3'}>
-                    <Overview data={prepareData(data)}></Overview>
+                    <Overview data={chartData}></Overview>
                     <div className={'my-3'}>
                         <button className='btn btn-primary btn-lg me-2' onClick={handleOpenPopup}>Add Expense</button>
                         <button className='btn btn-primary btn-lg ms-2' onClick={handleReport}>Expense Report</button>

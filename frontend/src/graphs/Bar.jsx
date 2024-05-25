@@ -1,6 +1,6 @@
 import {Bar} from "react-chartjs-2";
 
-const BarChart = ({data}) => {
+const BarChart = ({data: data}) => {
     const options = {
         responsive: true,
         plugins: {

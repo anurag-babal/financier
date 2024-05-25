@@ -160,6 +160,8 @@ services:
         condition: service_healthy
       discovery-server:
         condition: service_healthy
+      expense-service:
+        condition: service_healthy
     extends:
       file: common-config.yaml
       service: microservice-discovery-server-config

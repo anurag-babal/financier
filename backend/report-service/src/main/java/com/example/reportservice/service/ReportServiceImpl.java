@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +47,7 @@ public class ReportServiceImpl implements ReportService {
     public Report generateReport(List<ExpenseDto> expenses, List<CategoryDto> categories, String category, String year, String month) {
         Map<String, List<Map<String, Double>>> content = new HashMap<>();
         Map<String, Double> categoryExpense = new HashMap<>();
+        expenses.sort(Comparator.comparing(ExpenseDto::getDate));
         if (!year.equalsIgnoreCase("all")) {
             List<ExpenseDto> filteredExpenses = expenses.stream()
                     .filter(expense -> expense.getDate().getYear() == Integer.parseInt(year))

@@ -17,7 +17,7 @@ export default function Expenses({openForm}) {
 
     useEffect(() => {
         setLoading(true);
-        getLatestExpenses(userId, 5)
+        getLatestExpenses(userId, 20)
             .then(r => {
                 console.log(r)
                 setExpenses(r.data)

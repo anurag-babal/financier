@@ -11,6 +11,7 @@ import {registerCharts} from "./utils/register-charts";
 import CategoryProvider from "./store/category-context";
 import Signup from "./pages/signup";
 import Logout from "./pages/logout";
+import ReportProvider from "./store/report-context";
 
 registerCharts();
 
@@ -20,18 +21,20 @@ function App() {
             <AuthProvider>
                 <UserProvider>
                     <CategoryProvider>
-                        <BrowserRouter>
-                            <Routes>
-                                <Route path="/login" element={<Login/>}/>
-                                <Route path="/register" element={<Signup/>}/>
-                                <Route element={<PrivateRoute/>}>
-                                    <Route index element={<Homepage/>}/>
-                                    <Route path="/reports" element={<ReportPage/>}/>
-                                </Route>
-                                <Route path="/logout" element={<Logout/>}/>
-                                <Route path="*" element={<PageNotFound/>}/>
-                            </Routes>
-                        </BrowserRouter>
+                        <ReportProvider>
+                            <BrowserRouter>
+                                <Routes>
+                                    <Route path="/login" element={<Login/>}/>
+                                    <Route path="/register" element={<Signup/>}/>
+                                    <Route element={<PrivateRoute/>}>
+                                        <Route index element={<Homepage/>}/>
+                                        <Route path="/reports" element={<ReportPage/>}/>
+                                    </Route>
+                                    <Route path="/logout" element={<Logout/>}/>
+                                    <Route path="*" element={<PageNotFound/>}/>
+                                </Routes>
+                            </BrowserRouter>
+                        </ReportProvider>
                     </CategoryProvider>
                 </UserProvider>
             </AuthProvider>

@@ -80,7 +80,7 @@ export default function ReportPage() {
         <div className="container">
             <h1>Reports</h1>
             <Row>
-                <Col sm={3}>
+                <Col sm={'4'}>
                     <Form.Select name="month" value={selectedMonth} onChange={handleSelectChange}>
                         {months.map((month) => (
                             <option key={month} value={month}>
@@ -89,7 +89,7 @@ export default function ReportPage() {
                         ))}
                     </Form.Select>
                 </Col>
-                <Col sm={3}>
+                <Col sm={'4'}>
                     <Form.Select name="year" value={selectedYear} onChange={handleSelectChange}>
                         {years.map((year) => (
                             <option key={year} value={year}>
@@ -98,7 +98,7 @@ export default function ReportPage() {
                         ))}
                     </Form.Select>
                 </Col>
-                <Col sm={3}>
+                <Col sm={'4'}>
                         <Form.Select name="category" value={selectedCategory} onChange={handleSelectChange}>
                             <option value="all">All Categories</option>
                             {categories.map((category) => (
@@ -108,15 +108,15 @@ export default function ReportPage() {
                             ))}
                         </Form.Select>
                 </Col>
-                <Col sm={3}>
-                    <Form.Select name="chartType" value={selectedChartType} onChange={handleSelectChange}>
-                        {chartTypes.map((type) => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
-                    </Form.Select>
-                </Col>
+                {/*<Col sm={3}>*/}
+                {/*    <Form.Select name="chartType" value={selectedChartType} onChange={handleSelectChange}>*/}
+                {/*        {chartTypes.map((type) => (*/}
+                {/*            <option key={type} value={type}>*/}
+                {/*                {type}*/}
+                {/*            </option>*/}
+                {/*        ))}*/}
+                {/*    </Form.Select>*/}
+                {/*</Col>*/}
             </Row>
             <br/>
             {/*{reportData && renderChart()}*/}

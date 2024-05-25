@@ -4,7 +4,6 @@ import Dashboard from "./Deashboard";
 import BarChart from "../graphs/Bar";
 
 function Overview({data}) {
-
     return (
         <>
             <div className={'container my-4'}>
@@ -19,7 +18,6 @@ function Overview({data}) {
                             </div>
                             <div className={'col-6'}>
                                 <div className={'graph'}>
-                                    {/*<BarGraph title="Expenses" data={data}/>*/}
                                     <BarChart data={data}/>
                                 </div>
                             </div>
