@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, createBrowserRouter, Route, Routes} from "react-router-dom";
 import Login from './pages/Login';
 import Homepage from './pages/Homepage';
 import ReportPage from './pages/reports';
@@ -14,6 +14,12 @@ import Logout from "./pages/logout";
 import ReportProvider from "./store/report-context";
 
 registerCharts();
+
+const router = createBrowserRouter([
+    {path: '/login', element: <Login/>},
+    {path: '/register', element: <Signup/>},
+    {path: '/logout', element: <Logout/>},
+])
 
 function App() {
     return (

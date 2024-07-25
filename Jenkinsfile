@@ -25,19 +25,15 @@ pipeline {
         }
         stage('Run Tests (Backend)') {
             steps {
-                script {
-                    for (microservice in microservices) {
-                        sh "ansible-playbook -i ansible/hosts ansible/test.yaml -e microservice_name=${microservice}"
-                    }
+                for (microservice in microservices) {
+                    sh "mvn test -f backend/${microservice}/pom.xml"
                 }
             }
         }
         stage('Run Build (Backend)') {
             steps {
-                script {
-                    for (microservice in microservices) {
-                        sh "ansible-playbook -i ansible/hosts ansible/build.yaml -e microservice_name=${microservice}"
-                    }
+                for (microservice in microservices) {
+                    sh "mvn test -f backend/${microservice}/pom.xml"
                 }
             }
         }
@@ -45,9 +41,9 @@ pipeline {
             steps {
                 script {
                     for (microservice in microservices) {
-                        sh "ansible-playbook -i ansible/hosts ansible/build-backend-images.yaml -e microservice_name=${microservice}"
+                        sh "docker build -t ${microservice} backend/${microservice}"
                     }
-                    sh "ansible-playbook -i ansible/hosts ansible/build-frontend-image.yaml -e microservice_name=${frontend}"
+                    sh "docker build -t ${frontend} frontend"
                 }
             }
         }
@@ -70,9 +66,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    def config = env.DOCKER_COMPOSE_CONFIG ?: 'default'
-                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml down"
-                    sh "docker-compose -f docker-compose/${config}/docker-compose.yaml up -d"
+                    sh "ansible-playbook -i ansible/hosts ansible/deploy.yaml -e docker_compose_config=${env.DOCKER_COMPOSE_CONFIG}"
                 }
             }
         }

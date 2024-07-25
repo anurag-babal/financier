@@ -2,6 +2,7 @@ import React from 'react'
 import '../css/Overview.css'
 import Dashboard from "./Deashboard";
 import BarChart from "../graphs/Bar";
+import PieChart from "../graphs/Pie";
 
 function Overview({data}) {
     return (
@@ -18,6 +19,7 @@ function Overview({data}) {
                             </div>
                             <div className={'col-6'}>
                                 <div className={'graph'}>
+                                    <BarChart data={data}/>
                                     <BarChart data={data}/>
                                 </div>
                             </div>

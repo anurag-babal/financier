@@ -1,0 +1,37 @@
+---
+- name: Deploy Spring Boot application using Docker Compose
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Ensure docker and docker-compose are installed
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: Start docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Copy docker-compose.yml to remote host
+      copy:
+        src: docker-compose/{{ docker_compose_config }}/docker-compose.yaml
+        dest: /tmp/docker-compose.yml
+
+    - name: Copy project files to remote host
+      synchronize:
+        src: ../docker-compose/{{ docker_compose_config }}/
+        dest: /tmp/financier
+        exclude: '.git*'  # Exclude .git directory
+
+#    - name: Pull Docker image
+#      docker_image:
+#        name: your-image-name:latest  # Replace with your image name
+#        source: registry.docker.io  # Replace with your registry
+
+    - name: Run docker-compose up -d
+      command: docker-compose -f /tmp/financier/docker-compose.yml up -d
