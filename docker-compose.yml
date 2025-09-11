@@ -1,0 +1,132 @@
+# Docker Compose file for running the Financier application in a local development environment.
+# Version '3.8' is a modern and stable version of the Docker Compose file format.
+# version: "3.8"
+
+services:
+  #----------------------------------------------------#
+  #  INFRASTRUCTURE SERVICES
+  #----------------------------------------------------#
+  service-registry:
+    build:
+      context: ./infrastructure/service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - financier-net
+
+  api-gateway:
+    build:
+      context: ./infrastructure/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+    networks:
+      - financier-net
+
+  message-broker:
+    image: rabbitmq:3.9-management
+    container_name: message-broker
+    ports:
+      - "5672:5672" # AMQP port for services
+      - "15672:15672" # Management UI
+    networks:
+      - financier-net
+
+  #----------------------------------------------------#
+  #  DATABASES
+  #----------------------------------------------------#
+  user-db:
+    image: postgres:14
+    container_name: user-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=financier
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=user_service_db
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - financier-net
+
+  expense-db:
+    image: mongo:5.0
+    container_name: expense-db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=financier
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - expense-db-data:/data/db
+    networks:
+      - financier-net
+
+  #----------------------------------------------------#
+  #  BACKEND SERVICES
+  #----------------------------------------------------#
+  user-service:
+    build:
+      context: ./services/user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - user-db
+      - service-registry
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user_service_db
+      - SPRING_DATASOURCE_USERNAME=financier
+      - SPRING_DATASOURCE_PASSWORD=password
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+    networks:
+      - financier-net
+
+  expense-service:
+    build:
+      context: ./services/expense-service
+    container_name: expense-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - expense-db
+      - service-registry
+      - message-broker
+    environment:
+      - MONGO_URI=mongodb://financier:password@expense-db:27017
+      - RABBITMQ_URL=amqp://guest:guest@message-broker:5672/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+    networks:
+      - financier-net
+
+  # --- Add other services (budget, reporting, notification) here in a similar fashion ---
+
+  #----------------------------------------------------#
+  #  FRONTEND SERVICE
+  #----------------------------------------------------#
+  # web-app:
+  #   build:
+  #     context: ./frontend/web-app
+  #   container_name: web-app
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - api-gateway
+  #   networks:
+  #     - financier-net
+
+#----------------------------------------------------#
+#  VOLUMES & NETWORKS
+#----------------------------------------------------#
+volumes:
+  user-db-data:
+  expense-db-data:
+
+networks:
+  financier-net:
+    driver: bridge

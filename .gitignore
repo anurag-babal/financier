@@ -1,0 +1,46 @@
+# Java
+user-service/target/
+user-service/.classpath
+user-service/.project
+user-service/.settings/
+user-service/.idea/
+user-service/*.iml
+
+# Node/React
+frontend/node_modules/
+frontend/build/
+frontend/.env
+frontend/.next/
+frontend/.cache/
+
+# Go
+expense-service/bin/
+reporting-service/bin/
+*.exe
+*.test
+*.out
+
+# General
+.DS_Store
+Thumbs.db
+*.log
+.env
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Docker
+**/tmp/
+**/logs/
+**/.env
+
+# VSCode
+.vscode/
+
+# Python (if any future scripts)
+__pycache__/
+*.pyc
+
+# Infrastructure
+infrastructure/.env

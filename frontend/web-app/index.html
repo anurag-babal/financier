@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Financier - Expense Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel for JSX -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .form-input {
+        @apply w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400;
+      }
+      .btn-primary {
+        @apply w-full px-4 py-2 mt-4 font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200;
+      }
+      .card {
+        @apply bg-white rounded-xl shadow-lg p-6;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // --- API Helper ---
+      const API_BASE_URL = "http://localhost:8080"; // API Gateway URL
+
+      const api = {
+        login: (email, password) =>
+          fetch(`${API_BASE_URL}/user-service/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          }),
+        register: (name, email, password) =>
+          fetch(`${API_BASE_URL}/user-service/api/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password }),
+          }),
+        getExpenses: (token) =>
+          fetch(`${API_BASE_URL}/expense-service/api/expenses`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        addExpense: (token, expenseData) =>
+          fetch(`${API_BASE_URL}/expense-service/api/expenses`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(expenseData),
+          }),
+      };
+
+      // --- Components ---
+
+      const LoginPage = ({ onLoginSuccess, onSwitchToRegister }) => {
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [error, setError] = useState("");
+        const [loading, setLoading] = useState(false);
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          setError("");
+          setLoading(true);
+          try {
+            const response = await api.login(email, password);
+            const data = await response.json();
+            if (response.ok) {
+              onLoginSuccess(data.token);
+            } else {
+              setError(
+                data.message || "Login failed. Please check your credentials."
+              );
+            }
+          } catch (err) {
+            setError("An error occurred. Please try again later.");
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        return (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+              <h2 className="text-3xl font-bold text-center text-gray-800">
+                Welcome Back
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </button>
+              </form>
+              <p className="text-sm text-center text-gray-600">
+                Don't have an account?{" "}
+                <button
+                  onClick={onSwitchToRegister}
+                  className="font-medium text-indigo-600 hover:underline"
+                >
+                  Register here
+                </button>
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      const RegisterPage = ({ onSwitchToLogin }) => {
+        const [name, setName] = useState("");
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [message, setMessage] = useState("");
+        const [error, setError] = useState("");
+        const [loading, setLoading] = useState(false);
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          setError("");
+          setMessage("");
+          setLoading(true);
+          try {
+            const response = await api.register(name, email, password);
+            if (response.ok) {
+              setMessage("Registration successful! Please login.");
+              setTimeout(() => onSwitchToLogin(), 2000);
+            } else {
+              const data = await response.json();
+              setError(data.message || "Registration failed.");
+            }
+          } catch (err) {
+            setError("An error occurred during registration.");
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        return (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+              <h2 className="text-3xl font-bold text-center text-gray-800">
+                Create Account
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
+                {message && (
+                  <p className="text-green-500 text-sm text-center">
+                    {message}
+                  </p>
+                )}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? "Registering..." : "Register"}
+                </button>
+              </form>
+              <p className="text-sm text-center text-gray-600">
+                Already have an account?{" "}
+                <button
+                  onClick={onSwitchToLogin}
+                  className="font-medium text-indigo-600 hover:underline"
+                >
+                  Login here
+                </button>
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      const DashboardPage = ({ token, onLogout }) => {
+        const [expenses, setExpenses] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState("");
+
+        const fetchExpenses = async () => {
+          try {
+            const response = await api.getExpenses(token);
+            if (response.ok) {
+              const data = await response.json();
+              setExpenses(data || []);
+            } else {
+              setError("Failed to fetch expenses.");
+            }
+          } catch (err) {
+            setError("An error occurred while fetching expenses.");
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        useEffect(() => {
+          fetchExpenses();
+        }, []);
+
+        const handleExpenseAdded = (newExpense) => {
+          // To keep it simple, we refetch the list.
+          // A more optimized approach would be to add the new expense to the state.
+          fetchExpenses();
+        };
+
+        return (
+          <div className="min-h-screen bg-gray-100">
+            <nav className="bg-white shadow-md">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
+                  <h1 className="text-2xl font-bold text-indigo-600">
+                    Financier
+                  </h1>
+                  <button
+                    onClick={onLogout}
+                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+              <div className="px-4 py-6 sm:px-0">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-1">
+                    <AddExpenseForm
+                      token={token}
+                      onExpenseAdded={handleExpenseAdded}
+                    />
+                  </div>
+                  <div className="lg:col-span-2">
+                    <div className="card">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                        Your Expenses
+                      </h3>
+                      {loading && <p>Loading expenses...</p>}
+                      {error && <p className="text-red-500">{error}</p>}
+                      {!loading && !error && (
+                        <ExpenseList expenses={expenses} />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
+          </div>
+        );
+      };
+
+      const AddExpenseForm = ({ token, onExpenseAdded }) => {
+        const [amount, setAmount] = useState("");
+        const [category, setCategory] = useState("");
+        const [description, setDescription] = useState("");
+        const [date, setDate] = useState(
+          new Date().toISOString().split("T")[0]
+        );
+        const [error, setError] = useState("");
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          setError("");
+          try {
+            const response = await api.addExpense(token, {
+              amount: parseFloat(amount),
+              category,
+              description,
+              date,
+            });
+            if (response.ok) {
+              onExpenseAdded();
+              setAmount("");
+              setCategory("");
+              setDescription("");
+              setDate(new Date().toISOString().split("T")[0]);
+            } else {
+              const data = await response.json();
+              setError(data.error || "Failed to add expense.");
+            }
+          } catch (err) {
+            setError("An error occurred.");
+          }
+        };
+
+        return (
+          <div className="card">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Add New Expense
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                  className="form-input"
+                  placeholder="e.g., 25.50"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Category
+                </label>
+                <input
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                  className="form-input"
+                  placeholder="e.g., Food, Transport"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Description (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="form-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
+                  className="form-input"
+                />
+              </div>
+              <button type="submit" className="btn-primary">
+                Add Expense
+              </button>
+            </form>
+          </div>
+        );
+      };
+
+      const ExpenseList = ({ expenses }) => {
+        if (expenses.length === 0) {
+          return (
+            <p className="text-gray-600">
+              No expenses found. Add one to get started!
+            </p>
+          );
+        }
+
+        return (
+          <div className="space-y-4">
+            {expenses
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .map((exp) => (
+                <div
+                  key={exp.id}
+                  className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">
+                      {exp.category}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {exp.description || "No description"}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(exp.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">
+                    ${exp.amount.toFixed(2)}
+                  </p>
+                </div>
+              ))}
+          </div>
+        );
+      };
+
+      // --- Main App Component ---
+      const App = () => {
+        const [view, setView] = useState("login"); // 'login', 'register', 'dashboard'
+        const [token, setToken] = useState(
+          localStorage.getItem("financier_token")
+        );
+
+        const handleLoginSuccess = (newToken) => {
+          localStorage.setItem("financier_token", newToken);
+          setToken(newToken);
+        };
+
+        const handleLogout = () => {
+          localStorage.removeItem("financier_token");
+          setToken(null);
+        };
+
+        if (token) {
+          return <DashboardPage token={token} onLogout={handleLogout} />;
+        }
+
+        if (view === "register") {
+          return <RegisterPage onSwitchToLogin={() => setView("login")} />;
+        }
+
+        return (
+          <LoginPage
+            onLoginSuccess={handleLoginSuccess}
+            onSwitchToRegister={() => setView("register")}
+          />
+        );
+      };
+
+      const container = document.getElementById("root");
+      const root = ReactDOM.createRoot(container);
+      root.render(<App />);
+    </script>
+  </body>
+</html>
