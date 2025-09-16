@@ -1,4 +1,4 @@
-package com.financier.userservice.model;
+package com.financier.userservice.application.dto;
 
 public class AuthResponse {
     private String token;

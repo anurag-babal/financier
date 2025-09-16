@@ -1,23 +1,27 @@
-package com.financier.userservice.service;
+package com.financier.userservice.application.service;
 
-import com.financier.userservice.model.*;
-import com.financier.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.financier.userservice.application.dto.LoginRequest;
+import com.financier.userservice.application.dto.RegisterRequest;
+import com.financier.userservice.application.dto.UserResponse;
+import com.financier.userservice.domain.model.User;
+import com.financier.userservice.domain.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final TokenService tokenService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -45,8 +49,7 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
-        // Generate JWT token using JwtService
-        return jwtService.generateToken(user);
+        return tokenService.generateToken(user);
     }
 
     @Override

@@ -1,8 +1,10 @@
-package com.financier.userservice.controller;
+package com.financier.userservice.interface_.controller;
 
-
-import com.financier.userservice.model.*;
-import com.financier.userservice.service.UserService;
+import com.financier.userservice.application.dto.RegisterRequest;
+import com.financier.userservice.application.dto.LoginRequest;
+import com.financier.userservice.application.dto.UserResponse;
+import com.financier.userservice.application.dto.AuthResponse;
+import com.financier.userservice.application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;

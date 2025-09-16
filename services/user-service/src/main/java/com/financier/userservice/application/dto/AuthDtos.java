@@ -1,4 +1,4 @@
-package com.financier.userservice.controller.dto;
+package com.financier.userservice.application.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
