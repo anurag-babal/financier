@@ -36,13 +36,13 @@
 
       const api = {
         login: (email, password) =>
-          fetch(`${API_BASE_URL}/user-service/api/auth/login`, {
+          fetch(`${API_BASE_URL}/user-service/api/users/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
           }),
         register: (name, email, password) =>
-          fetch(`${API_BASE_URL}/user-service/api/auth/register`, {
+          fetch(`${API_BASE_URL}/user-service/api/users/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, email, password }),
