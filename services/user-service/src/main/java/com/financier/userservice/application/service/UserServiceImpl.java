@@ -30,21 +30,21 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already registered");
         }
         User user = User.builder()
-                .name(request.getUsername())
+                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-        userRepository.save(user);
+        user = userRepository.save(user);
         UserResponse response = new UserResponse();
         response.setId(user.getId());
-        response.setUsername(user.getName());
+        response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         return response;
     }
 
     @Override
     public String login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getUsername())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
