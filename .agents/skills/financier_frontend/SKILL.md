@@ -13,7 +13,15 @@ description: UI/UX standards, typography, and data resiliency patterns for the F
 *   **Empty Response Handling (Null-Safety)**: When fetching lists (e.g., expenses), always check if the decoded JSON is `null`. Go backends may return `null` instead of `[]` for empty slices. Implement a check: `if (decodedData == null) return [];`.
 *   **Graceful Fallbacks**: Ensure the UI can still display partial information (like the user's name) even if a secondary service (like expenses) is temporarily unreachable.
 
-## 3. Theming
+## 3. Authentication & Persistence
+*   **Persistent Sessions**: Use `shared_preferences` to store the JWT token locally. 
+*   **AuthHelper Pattern**: Centralize token management (save, get, logout) in a dedicated `AuthHelper` class.
+*   **Automatic Boot-Routing**: Use a `FutureBuilder` in `main.dart` to check `AuthHelper.isLoggedIn()` on app startup. Route directly to `DashboardScreen` if authenticated, bypassing the login screen.
+*   **Token initialization**: Ensure `HttpApiService` is initialized with the stored token immediately upon app start so subsequent requests are authenticated.
+
+## 4. Theming & UX
 *   **Luxury Dark Mode**: Strictly follow `AppColors` in `lib/core/theme.dart`.
 *   **Animations**: Maintain the premium feel by wrapping new UI elements in `animate_do` widgets (`FadeInUp`, etc.).
 *   **Currency Mapping**: Use the `currencySymbol` getter in `UserModel` to map currency codes to their native glyphs.
+*   **Color-Coded Feedback**: Use meaningful semantic colors (e.g., Green for income, Red for expenses) to provide instant visual feedback on transaction types.
+

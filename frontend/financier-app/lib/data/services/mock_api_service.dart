@@ -1,6 +1,6 @@
-import 'dart:async';
 import '../models/expense_model.dart';
 import '../models/user_model.dart';
+import '../models/dashboard_summary_model.dart';
 
 class MockApiService {
   final List<Expense> _mockExpenses = [
@@ -73,5 +73,20 @@ class MockApiService {
 
   Future<void> updateProfile(User user) async {
     await Future.delayed(const Duration(seconds: 1));
+  }
+
+  Future<DashboardSummary> getDashboardSummary() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return DashboardSummary(
+      totalBalance: 12450.80,
+      totalIncome: 14200.00,
+      totalExpenses: 1749.20,
+      expenseByCategory: {'Food': 45.50, 'Transport': 20.00, 'Shopping': 150.00, 'Entertainment': 12.99},
+    );
+  }
+
+  Future<List<Expense>> getRecentTransactions() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return List.from(_mockExpenses);
   }
 }

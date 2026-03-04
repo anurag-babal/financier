@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/models/expense_model.dart';
+import '../../data/models/dashboard_summary_model.dart';
 import '../../data/services/http_api_service.dart';
 import '../../core/theme.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,8 @@ import 'package:animate_do/animate_do.dart';
 import '../../data/models/user_model.dart';
 import 'onboarding_screen.dart';
 import 'add_expense_screen.dart';
+import 'login_screen.dart';
+import '../../data/services/auth_helper.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -18,7 +21,8 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final HttpApiService _apiService = HttpApiService();
-  List<Expense> _expenses = [];
+  List<Expense> _recentTransactions = [];
+  DashboardSummary? _summary;
   User? _user;
   bool _isLoading = true;
 
@@ -39,12 +43,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print('Error loading user profile: $e');
     }
 
-    // Load Expenses
+    // Load Summary
     try {
-      final expenses = await _apiService.getExpenses();
-      setState(() => _expenses = expenses);
+      final summary = await _apiService.getDashboardSummary();
+      setState(() => _summary = summary);
     } catch (e) {
-      print('Error loading expenses: $e');
+      print('Error loading summary: $e');
+    }
+
+    // Load Transactions
+    try {
+      final txs = await _apiService.getRecentTransactions();
+      setState(() => _recentTransactions = txs);
+    } catch (e) {
+      print('Error loading transactions: $e');
     }
 
     setState(() => _isLoading = false);
@@ -57,8 +69,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Text('Hi, ${_displayName.split(" ")[0]}'),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.account_circle_outlined, size: 28),
+            onPressed: () async {
+              await AuthHelper.logout();
+              if (mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false,
+                );
+              }
+            },
+            icon: const Icon(Icons.logout, size: 28),
           ),
         ],
       ),
@@ -89,7 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(height: 16),
                     FadeInUp(
                       delay: const Duration(milliseconds: 300),
-                      child: ExpenseChart(expenses: _expenses),
+                      child: ExpenseChart(expenses: _recentTransactions),
                     ),
                     const SizedBox(height: 32),
                     FadeInLeft(
@@ -114,11 +134,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _expenses.length,
+                      itemCount: _recentTransactions.length,
                       itemBuilder: (context, index) {
                         return FadeInUp(
                           delay: Duration(milliseconds: 400 + (index * 100)),
-                          child: _buildTransactionItem(_expenses[index]),
+                          child: _buildTransactionItem(_recentTransactions[index]),
                         );
                       },
                     ),
@@ -182,7 +202,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${_user?.currencySymbol ?? ''}${NumberFormat.currency(symbol: '', decimalDigits: 2).format(12450.80)}',
+            '${_user?.currencySymbol ?? ''}${NumberFormat.currency(symbol: '', decimalDigits: 2).format(_summary?.totalBalance ?? 0.0)}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -193,9 +213,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildBalanceDetail('Income', '${_user?.currencySymbol ?? ''}4,200', Icons.arrow_upward),
+              _buildBalanceDetail('Income', '${_user?.currencySymbol ?? ''}${NumberFormat.currency(symbol: '', decimalDigits: 2).format(_summary?.totalIncome ?? 0.0)}', Icons.arrow_upward),
               Container(width: 1, height: 40, color: Colors.white24),
-              _buildBalanceDetail('Expenses', '${_user?.currencySymbol ?? ''}1,850', Icons.arrow_downward),
+              _buildBalanceDetail('Expenses', '${_user?.currencySymbol ?? ''}${NumberFormat.currency(symbol: '', decimalDigits: 2).format(_summary?.totalExpenses ?? 0.0)}', Icons.arrow_downward),
             ],
           ),
         ],
@@ -251,9 +271,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           style: const TextStyle(color: AppColors.textMuted),
         ),
         trailing: Text(
-          '-${_user?.currencySymbol ?? ''}${expense.amount.toStringAsFixed(2)}',
-          style: const TextStyle(
-            color: AppColors.secondary,
+          '${expense.type == 'INCOME' ? '+' : '-'}${_user?.currencySymbol ?? ''}${expense.amount.toStringAsFixed(2)}',
+          style: TextStyle(
+            color: expense.type == 'INCOME' ? Colors.green : AppColors.secondary,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),

@@ -70,6 +70,8 @@ func main() {
 	{
 		api.POST("", expenseHandler.CreateExpense)
 		api.GET("", expenseHandler.GetUserExpenses)
+		api.GET("/summary", expenseHandler.GetSummary)
+		api.GET("/recent", expenseHandler.GetRecent)
 		api.GET("/:id", expenseHandler.GetExpenseByID)
 		api.PUT("/:id", expenseHandler.UpdateExpense)
 		api.DELETE("/:id", expenseHandler.DeleteExpense)

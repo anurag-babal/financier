@@ -21,3 +21,6 @@ description: Specific technical details for the Financier microservices, Eureka 
 ## 3. Database Management
 *   **Schema Sync**: If backend entity relationships change (e.g., the User-Profile normalization), perform a clean reset using `docker-compose down -v`.
 *   **Normalization**: Personal user details (bio, currency, budget) are stored in `user_profiles` to separate them from core authentication data in the `users` table.
+*   **Unified Ledger Pattern**: Instead of separate collections for Incomes and Expenses, use a single `transactions` collection with a `type` field ("INCOME" or "EXPENSE"). This simplifies total balance calculations and "Recent Transactions" queries.
+*   **MongoDB Aggregations**: Use database-level aggregations (`$group`, `$match`, `$sum`) to provide a pre-calculated `/summary` endpoint. This is more efficient for mobile clients than fetching raw data and calculating on the device.
+

@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ExpenseRepository defines the interface for expense data operations.
@@ -15,6 +16,8 @@ type ExpenseRepository interface {
 	Create(ctx context.Context, expense *model.Expense) (string, error)
 	GetByID(ctx context.Context, id string) (*model.Expense, error)
 	GetByUserID(ctx context.Context, userID string) ([]*model.Expense, error)
+	GetRecent(ctx context.Context, userID string, limit int) ([]*model.Expense, error)
+	GetSummary(ctx context.Context, userID string) (*model.DashboardSummary, error)
 	Update(ctx context.Context, id string, expense *model.Expense) (int64, error)
 	Delete(ctx context.Context, id string) (int64, error)
 }
@@ -73,6 +76,95 @@ func (r *mongoExpenseRepository) GetByUserID(ctx context.Context, userID string)
 	}
 
 	return expenses, nil
+}
+
+func (r *mongoExpenseRepository) GetRecent(ctx context.Context, userID string, limit int) ([]*model.Expense, error) {
+	expenses := make([]*model.Expense, 0)
+	opts := options.Find().SetSort(bson.D{{"date", -1}}).SetLimit(int64(limit))
+	cursor, err := r.collection.Find(ctx, bson.M{"userId": userID}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var expense model.Expense
+		if err := cursor.Decode(&expense); err != nil {
+			return nil, err
+		}
+		expenses = append(expenses, &expense)
+	}
+
+	return expenses, nil
+}
+
+func (r *mongoExpenseRepository) GetSummary(ctx context.Context, userID string) (*model.DashboardSummary, error) {
+	summary := &model.DashboardSummary{
+		ExpenseByCategory: make(map[string]float64),
+	}
+
+	pipeline := mongo.Pipeline{
+		bson.D{{"$match", bson.D{{"userId", userID}}}},
+		bson.D{{"$group", bson.D{
+			{"_id", "$type"},
+			{"total", bson.D{{"$sum", "$amount"}}},
+		}}},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var result struct {
+			Type  string  `bson:"_id"`
+			Total float64 `bson:"total"`
+		}
+		if err := cursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		if result.Type == "INCOME" {
+			summary.TotalIncome = result.Total
+		} else {
+			// default to EXPENSE
+			summary.TotalExpenses += result.Total
+		}
+	}
+
+	summary.TotalBalance = summary.TotalIncome - summary.TotalExpenses
+
+	// Aggregation for category breakdown of expenses
+	categoryPipeline := mongo.Pipeline{
+		bson.D{{"$match", bson.D{
+			{"userId", userID},
+			{"type", bson.D{{"$ne", "INCOME"}}}, // Treat missing type as EXPENSE
+		}}},
+		bson.D{{"$group", bson.D{
+			{"_id", "$category"},
+			{"total", bson.D{{"$sum", "$amount"}}},
+		}}},
+	}
+
+	catCursor, err := r.collection.Aggregate(ctx, categoryPipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer catCursor.Close(ctx)
+
+	for catCursor.Next(ctx) {
+		var result struct {
+			Category string  `bson:"_id"`
+			Total    float64 `bson:"total"`
+		}
+		if err := catCursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		summary.ExpenseByCategory[result.Category] = result.Total
+	}
+
+	return summary, nil
 }
 
 func (r *mongoExpenseRepository) Update(ctx context.Context, id string, expense *model.Expense) (int64, error) {

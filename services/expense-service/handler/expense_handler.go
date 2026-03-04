@@ -4,6 +4,7 @@ import (
 	"financier/expense-service/model"
 	"financier/expense-service/repository"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -40,6 +41,10 @@ func (h *ExpenseHandler) CreateExpense(c *gin.Context) {
 		expense.Date = time.Now()
 	}
 
+	if expense.Type == "" {
+		expense.Type = "EXPENSE"
+	}
+
 	id, err := h.repo.Create(c.Request.Context(), &expense)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create expense"})
@@ -64,6 +69,46 @@ func (h *ExpenseHandler) GetUserExpenses(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, expenses)
+}
+
+// GetRecent retrieves recent transactions for the authenticated user.
+func (h *ExpenseHandler) GetRecent(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		return
+	}
+
+	limitStr := c.DefaultQuery("limit", "5")
+	limit, _ := strconv.Atoi(limitStr)
+	if limit == 0 {
+		limit = 5
+	}
+
+	expenses, err := h.repo.GetRecent(c.Request.Context(), userID.(string), limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve recent transactions"})
+		return
+	}
+
+	c.JSON(http.StatusOK, expenses)
+}
+
+// GetSummary retrieves the dashboard summary for the authenticated user.
+func (h *ExpenseHandler) GetSummary(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in token"})
+		return
+	}
+
+	summary, err := h.repo.GetSummary(c.Request.Context(), userID.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve summary"})
+		return
+	}
+
+	c.JSON(http.StatusOK, summary)
 }
 
 // GetExpenseByID retrieves a single expense by its ID.

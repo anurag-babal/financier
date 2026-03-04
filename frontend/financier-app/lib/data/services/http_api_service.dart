@@ -3,14 +3,20 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/expense_model.dart';
 import '../models/user_model.dart';
+import '../models/dashboard_summary_model.dart';
 import 'mock_api_service.dart';
+import 'auth_helper.dart';
 
 class HttpApiService implements MockApiService {
   // Use 10.0.2.2 for Android Emulator, localhost for Web/Browser
   final String _baseUrl = kIsWeb ? 'http://localhost:8080' : 'http://10.0.2.2:8080';
   
-  // Static token to persist across navigations and service instantiations
   static String? _token;
+
+  // Initialize service by loading the saved token
+  static Future<void> initialize() async {
+    _token = await AuthHelper.getToken();
+  }
 
   String get _authHeader => _token != null ? 'Bearer $_token' : '';
 
@@ -36,6 +42,7 @@ class HttpApiService implements MockApiService {
           return Expense(
             id: json['_id'] ?? json['id'] ?? '',
             userId: json['user_id'] ?? json['userId'] ?? '',
+            type: json['type'] ?? 'EXPENSE',
             amount: (json['amount'] as num).toDouble(),
             category: json['category'] ?? '',
             description: json['description'] ?? '',
@@ -47,6 +54,64 @@ class HttpApiService implements MockApiService {
       }
     } catch (e) {
       print('Error fetching expenses: $e');
+      throw Exception('Failed to connect to backend: $e');
+    }
+  }
+
+  @override
+  Future<DashboardSummary> getDashboardSummary() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/expense-service/api/expenses/summary'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': _authHeader,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return DashboardSummary.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to load dashboard summary: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching dashboard summary: $e');
+      throw Exception('Failed to connect to backend: $e');
+    }
+  }
+
+  @override
+  Future<List<Expense>> getRecentTransactions() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/expense-service/api/expenses/recent?limit=5'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': _authHeader,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic decodedData = json.decode(response.body);
+        if (decodedData == null) return [];
+        
+        final List<dynamic> data = decodedData as List<dynamic>;
+        return data.map((json) {
+          return Expense(
+            id: json['_id'] ?? json['id'] ?? '',
+            userId: json['user_id'] ?? json['userId'] ?? '',
+            type: json['type'] ?? 'EXPENSE',
+            amount: (json['amount'] as num).toDouble(),
+            category: json['category'] ?? '',
+            description: json['description'] ?? '',
+            date: DateTime.parse(json['date'] ?? DateTime.now().toIso8601String()),
+          );
+        }).toList();
+      } else {
+        throw Exception('Failed to load recent transactions: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching recent transactions: $e');
       throw Exception('Failed to connect to backend: $e');
     }
   }
@@ -93,6 +158,7 @@ class HttpApiService implements MockApiService {
           'Authorization': _authHeader,
         },
         body: json.encode({
+          'type': expense.type,
           'amount': expense.amount,
           'category': expense.category,
           'description': expense.description,
@@ -146,7 +212,8 @@ class HttpApiService implements MockApiService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final token = data['token'] ?? '';
-        _token = token; // Store token for subsequent requests
+        _token = token; // Store token in memory
+        await AuthHelper.saveToken(token); // Store token persistently
         return token;
       } else {
         throw Exception('Login failed: ${response.statusCode}');

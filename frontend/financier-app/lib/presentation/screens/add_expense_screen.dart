@@ -18,7 +18,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final HttpApiService _apiService = HttpApiService();
   
   String _selectedCategory = 'Food';
-  final List<String> _categories = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Other'];
+  final List<String> _categories = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Salary', 'Other'];
+  String _selectedType = 'EXPENSE';
 
   bool _isSaving = false;
 
@@ -29,6 +30,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       final newExpense = Expense(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         userId: 'user123',
+        type: _selectedType,
         amount: double.parse(_amountController.text),
         category: _selectedCategory,
         description: _descriptionController.text,
@@ -47,7 +49,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Expense'),
+        title: const Text('Add Transaction'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -58,6 +60,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _buildTypeToggle(),
+                const SizedBox(height: 24),
                 _buildTextField(
                   label: 'Description',
                   controller: _descriptionController,
@@ -100,9 +104,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                     child: _isSaving
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Save Expense',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        : Text(
+                            'Save ${_selectedType == 'INCOME' ? 'Income' : 'Expense'}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                   ),
                 ),
@@ -170,6 +174,61 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTypeToggle() {
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () => setState(() {
+              _selectedType = 'EXPENSE';
+              _selectedCategory = 'Food'; // Reset to a common expense category
+            }),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: _selectedType == 'EXPENSE' ? AppColors.secondary : AppColors.surface,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                ),
+              ),
+              child: Center(
+                child: Text('Expense', style: TextStyle(
+                  color: _selectedType == 'EXPENSE' ? Colors.white : AppColors.textMuted,
+                  fontWeight: FontWeight.bold,
+                )),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: GestureDetector(
+            onTap: () => setState(() {
+              _selectedType = 'INCOME';
+              _selectedCategory = 'Salary'; // Reset to a common income category
+            }),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: _selectedType == 'INCOME' ? Colors.green : AppColors.surface,
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              child: Center(
+                child: Text('Income', style: TextStyle(
+                  color: _selectedType == 'INCOME' ? Colors.white : AppColors.textMuted,
+                  fontWeight: FontWeight.bold,
+                )),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

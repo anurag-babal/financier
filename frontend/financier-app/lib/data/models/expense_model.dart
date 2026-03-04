@@ -1,6 +1,7 @@
 class Expense {
   final String id;
   final String userId;
+  final String type;
   final double amount;
   final String category;
   final String description;
@@ -9,6 +10,7 @@ class Expense {
   Expense({
     required this.id,
     required this.userId,
+    this.type = 'EXPENSE',
     required this.amount,
     required this.category,
     required this.description,
@@ -19,6 +21,7 @@ class Expense {
     return Expense(
       id: json['id'],
       userId: json['userId'],
+      type: json['type'] ?? 'EXPENSE',
       amount: (json['amount'] as num).toDouble(),
       category: json['category'],
       description: json['description'] ?? '',
@@ -30,6 +33,7 @@ class Expense {
     return {
       'id': id,
       'userId': userId,
+      'type': type,
       'amount': amount,
       'category': category,
       'description': description,
