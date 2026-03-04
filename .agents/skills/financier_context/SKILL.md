@@ -36,7 +36,11 @@ The frontend application is located in `/frontend/financier-app/` and is built u
     *   `lib/core/`: Application-wide constants, themes, and configurations.
     *   `lib/data/`: Models (e.g., `expense_model.dart`, `user_model.dart`) and services (`http_api_service.dart`).
     *   `lib/domain/`: (Reserved for business logic / repository interfaces in the future).
-    *   `lib/presentation/`: UI components, screens (`dashboard_screen.dart`, `add_expense_screen.dart`), and widgets (`expense_chart.dart`).
+    *   `lib/presentation/`: UI components, screens (`login_screen.dart`, `register_screen.dart`, `onboarding_screen.dart`, `dashboard_screen.dart`).
+*   **User Lifecycle**:
+    1.  **Registration**: Phase 1 (Name, Email, Password, Currency).
+    2.  **Onboarding**: Phase 2 (Bio, Monthly Budget) triggered if profile is incomplete.
+    3.  **Dashboard**: Personalized with currency and budget goals.
 *   **Design Aesthetics**: Premium, Luxury Dark Mode.
     *   **Color Palette**: Deep Navy/Slate backgrounds (`0xFF0F172A`, `0xFF1E293B`), with vibrant accents like Emerald Green (`0xFF10B981`) for primary actions/income and Rose/Coral (`0xFFF43F5E`) for expenses.
     *   **Style**: Uses glassmorphism effects (subtle borders with gradient backgrounds) and clean typography (`Outfit` font family or similar).
