@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../widgets/expense_chart.dart';
 import 'add_expense_screen.dart';
 import 'package:animate_do/animate_do.dart';
+import 'onboarding_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -46,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Financier'),
+        title: Text('Hi, ${_user?.name.split(" ")[0] ?? "Financier"}'),
         actions: [
           IconButton(
             onPressed: () {},
@@ -64,6 +65,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (_user?.monthlyBudget == null || _user?.monthlyBudget == 0)
+                      FadeInDown(child: _buildOnboardingBanner()),
                     FadeInDown(child: _buildBalanceCard()),
                     const SizedBox(height: 32),
                     FadeInUp(
@@ -248,6 +251,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
             fontSize: 16,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildOnboardingBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.auto_awesome, color: AppColors.primary),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Complete your profile',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                Text(
+                  'Set your monthly budget goal to start tracking better.',
+                  style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OnboardingScreen(user: _user!)),
+                ).then((_) => _loadData());
+              }
+            },
+            child: const Text('Start'),
+          ),
+        ],
       ),
     );
   }

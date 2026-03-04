@@ -61,11 +61,13 @@ class HttpApiService implements MockApiService {
         final data = json.decode(response.body);
         return User(
           id: data['id'] is int ? data['id'] : int.tryParse(data['id'].toString()) ?? 0,
-          name: data['username'] ?? 'User',
+          name: data['name'] ?? data['username'] ?? 'User',
           username: data['username'] ?? 'user',
           email: data['email'] ?? '',
           profilePictureUrl: data['profilePictureUrl'] ?? 'https://i.pravatar.cc/150',
-          bio: '', // User service might not have bio yet
+          bio: data['bio'] ?? '',
+          currency: data['currency'] ?? 'USD',
+          monthlyBudget: data['monthlyBudget'] != null ? (data['monthlyBudget'] as num).toDouble() : null,
         );
       } else {
         throw Exception('Failed to load user profile: ${response.statusCode}');
