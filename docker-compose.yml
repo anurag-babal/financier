@@ -109,16 +109,16 @@ services:
   #----------------------------------------------------#
   #  FRONTEND SERVICE
   #----------------------------------------------------#
-  # web-app:
-  #   build:
-  #     context: ./frontend/web-app
-  #   container_name: web-app
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - api-gateway
-  #   networks:
-  #     - financier-net
+  web-app:
+    build:
+      context: ./frontend/financier-app
+    container_name: web-app
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - financier-net
 
 #----------------------------------------------------#
 #  VOLUMES & NETWORKS

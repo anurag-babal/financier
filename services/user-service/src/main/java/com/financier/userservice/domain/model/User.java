@@ -1,5 +1,7 @@
 package com.financier.userservice.domain.model;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +27,8 @@ public class User {
     private String address;
     private String socialLinks; // JSON string containing social media links
     private String preferences; // JSON string for user preferences
+    private String currency; // e.g. "USD", "INR"
+    private BigDecimal monthlyBudget;
     private String createdAt;
     private String updatedAt;
 }

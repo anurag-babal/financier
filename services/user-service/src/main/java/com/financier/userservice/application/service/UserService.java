@@ -7,6 +7,12 @@ import com.financier.userservice.application.dto.UserResponse;
 
 public interface UserService {
     UserResponse register(RegisterRequest request);
+
     String login(LoginRequest request);
+
     UserResponse getProfile(String email);
+
+    UserResponse getProfileById(Long id);
+
+    UserResponse updateProfile(Long id, UserResponse request);
 }

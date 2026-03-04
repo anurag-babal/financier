@@ -39,4 +39,12 @@ public class UserController {
         UserResponse response = userService.getProfile(userDetails.getUsername());
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserResponse> updateProfile(@AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UserResponse request) {
+        UserResponse currentUser = userService.getProfile(userDetails.getUsername());
+        UserResponse updated = userService.updateProfile(currentUser.getId(), request);
+        return ResponseEntity.ok(updated);
+    }
 }

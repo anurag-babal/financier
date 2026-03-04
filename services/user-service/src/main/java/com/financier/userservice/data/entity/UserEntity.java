@@ -1,5 +1,6 @@
 package com.financier.userservice.data.entity;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,6 +10,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true) // Important for entities with inheritance
 public class UserEntity extends BaseEntity {
+    @Column
+    private String name;
+
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -17,4 +21,19 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
+
+    @Column
+    private String profilePictureUrl;
+
+    @Column
+    private String bio;
+
+    @Column
+    private String phoneNumber;
+
+    @Column
+    private String currency;
+
+    @Column
+    private BigDecimal monthlyBudget;
 }
