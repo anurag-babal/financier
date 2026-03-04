@@ -4,12 +4,12 @@ import 'package:http/http.dart' as http;
 import '../models/expense_model.dart';
 import '../models/user_model.dart';
 import '../models/dashboard_summary_model.dart';
+import '../../core/app_config.dart';
 import 'mock_api_service.dart';
 import 'auth_helper.dart';
 
 class HttpApiService implements MockApiService {
-  // Use 10.0.2.2 for Android Emulator, localhost for Web/Browser
-  final String _baseUrl = kIsWeb ? 'http://localhost:8080' : 'http://10.0.2.2:8080';
+  final String _baseUrl = AppConfig.baseUrl;
   
   static String? _token;
 

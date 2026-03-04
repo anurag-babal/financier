@@ -28,11 +28,25 @@ The project utilizes a microservices infrastructure layer in the `/infrastructur
 
 *Architecture Assessment*: This provides high scalability, polyglot capabilities (Go/Java), and fault isolation, at the cost of operational complexity (networking, data consistency, deployment overhead).
 
-## 2. Frontend Application Context
-The frontend is a Flutter application. UI standards and data patterns are maintained in the [Financier Frontend Guidelines skill](../financier_frontend/SKILL.md).
+## 2. Directory Structure (Monorepo)
+*   **/apps/mobile**: The Flutter application (Android/iOS).
+*   **/services**: Backend microservices (Go/Java).
+*   **/infrastructure**: Shared infrastructure (Eureka, API Gateway, RabbitMQ).
+*   **/docs**: Project documentation.
+
+## 3. Environment Management
+*   **Centralized Configuration**: All environment variables (ports, database credentials, secrets) are managed in a root-level `.env` file (not checked into Git). 
+*   **Env Template**: Refer to `.env.example` for the required keys.
+*   **Docker Injection**: The `docker-compose.yml` serves as a template that injects variables from `.env` into service containers.
+
+## 4. Frontend Application Context
+The mobile app (Flutter) is located in `apps/mobile/`. UI standards and data patterns are maintained in the [Financier Frontend Guidelines skill](../financier_frontend/SKILL.md).
 
 *   **Design**: Luxury Dark Mode with `GoogleFonts` (Outfit).
 *   **Resiliency**: Independent service loading for multi-service screens.
+*   **Authentication**: JWT-based session persistence using `shared_preferences`.
+*   **Dynamic API URL**: Use the `AppConfig` class in `lib/core/app_config.dart`. It leverages `--dart-define` to allow switching base URLs without code changes.
+*   **Symlink Support**: Building on Windows with native plugins (like `shared_preferences`) requires **Windows Developer Mode** enabled.
 
 ## 3. General Guiding Principles
 *   **Monorepo Strategy**: Keep mobile, backend, and infra in one repo for atomic commits.

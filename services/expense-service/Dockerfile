@@ -23,8 +23,8 @@ WORKDIR /root/
 # Copy the built binary from the builder stage
 COPY --from=builder /app/expense-service .
 
-# Expose port 8081
-EXPOSE 8081
+# Expose port 8082
+EXPOSE 8082
 
 # Command to run the executable
 CMD ["./expense-service"]
