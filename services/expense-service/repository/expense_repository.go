@@ -57,7 +57,7 @@ func (r *mongoExpenseRepository) GetByID(ctx context.Context, id string) (*model
 }
 
 func (r *mongoExpenseRepository) GetByUserID(ctx context.Context, userID string) ([]*model.Expense, error) {
-	var expenses []*model.Expense
+	expenses := make([]*model.Expense, 0)
 	cursor, err := r.collection.Find(ctx, bson.M{"userId": userID})
 	if err != nil {
 		return nil, err

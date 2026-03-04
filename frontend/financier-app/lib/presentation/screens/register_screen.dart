@@ -15,7 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _selectedCurrency = 'USD';
+  String _selectedCurrency = 'INR';
   bool _isLoading = false;
 
   final List<String> _currencies = ['USD', 'INR', 'EUR', 'GBP', 'JPY'];

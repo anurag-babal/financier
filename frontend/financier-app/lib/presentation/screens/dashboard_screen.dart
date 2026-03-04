@@ -4,9 +4,10 @@ import '../../data/services/http_api_service.dart';
 import '../../core/theme.dart';
 import 'package:intl/intl.dart';
 import '../widgets/expense_chart.dart';
-import 'add_expense_screen.dart';
 import 'package:animate_do/animate_do.dart';
+import '../../data/models/user_model.dart';
 import 'onboarding_screen.dart';
+import 'add_expense_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,25 +30,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
+    
+    // Load User Profile
+    try {
+      final user = await _apiService.getUserProfile();
+      setState(() => _user = user);
+    } catch (e) {
+      print('Error loading user profile: $e');
+    }
+
+    // Load Expenses
     try {
       final expenses = await _apiService.getExpenses();
-      final user = await _apiService.getUserProfile();
-      setState(() {
-        _expenses = expenses;
-        _user = user;
-        _isLoading = false;
-      });
+      setState(() => _expenses = expenses);
     } catch (e) {
-      setState(() => _isLoading = false);
-      print('Error loading dashboard: $e');
+      print('Error loading expenses: $e');
     }
+
+    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hi, ${_user?.name.split(" ")[0] ?? "Financier"}'),
+        title: Text('Hi, ${_displayName.split(" ")[0]}'),
         actions: [
           IconButton(
             onPressed: () {},
@@ -175,7 +182,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${_user?.currency ?? '\$'}12,450.80',
+            '${_user?.currencySymbol ?? ''}${NumberFormat.currency(symbol: '', decimalDigits: 2).format(12450.80)}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -186,9 +193,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildBalanceDetail('Income', '\$4,200', Icons.arrow_upward),
+              _buildBalanceDetail('Income', '${_user?.currencySymbol ?? ''}4,200', Icons.arrow_upward),
               Container(width: 1, height: 40, color: Colors.white24),
-              _buildBalanceDetail('Expenses', '\$1,850', Icons.arrow_downward),
+              _buildBalanceDetail('Expenses', '${_user?.currencySymbol ?? ''}1,850', Icons.arrow_downward),
             ],
           ),
         ],
@@ -244,7 +251,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           style: const TextStyle(color: AppColors.textMuted),
         ),
         trailing: Text(
-          '-${_user?.currency ?? '\$'}${expense.amount.toStringAsFixed(2)}',
+          '-${_user?.currencySymbol ?? ''}${expense.amount.toStringAsFixed(2)}',
           style: const TextStyle(
             color: AppColors.secondary,
             fontWeight: FontWeight.bold,
@@ -297,6 +304,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
     );
+  }
+
+  String get _displayName {
+    if (_user == null) return 'Financier';
+    if (_user!.name.isNotEmpty && _user!.name != 'User') return _user!.name;
+    return _user!.username.isNotEmpty ? _user!.username : 'User';
   }
 
   IconData _getCategoryIcon(String category) {

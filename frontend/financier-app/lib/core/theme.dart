@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   static const Color background = Color(0xFF0F172A); // Deep Navy
   static const Color surface = Color(0xFF1E293B);    // Slate
+  static const Color cardBackground = Color(0xFF1E293B); // Slate
   static const Color primary = Color(0xFF10B981);   // Emerald Green
   static const Color secondary = Color(0xFFF43F5E); // Rose/Coral
   static const Color textBody = Color(0xFFF8FAFC);
@@ -12,8 +14,8 @@ class AppColors {
 
 class AppTheme {
   static ThemeData get darkTheme {
-    return ThemeData(
-      brightness: Brightness.dark,
+    final baseTheme = ThemeData.dark();
+    return baseTheme.copyWith(
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.primary,
       colorScheme: const ColorScheme.dark(
@@ -21,7 +23,11 @@ class AppTheme {
         secondary: AppColors.secondary,
         surface: AppColors.surface,
       ),
-      fontFamily: 'Outfit',
+      textTheme: GoogleFonts.outfitTextTheme(baseTheme.textTheme).copyWith(
+        bodyLarge: const TextStyle(color: AppColors.textBody),
+        bodyMedium: const TextStyle(color: AppColors.textBody),
+        displayLarge: const TextStyle(color: AppColors.textBody, fontWeight: FontWeight.bold),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,

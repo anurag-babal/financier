@@ -83,6 +83,8 @@ public class UserServiceImpl implements UserService {
 
         if (request.getName() != null)
             user.setName(request.getName());
+
+        // Handle profile fields
         if (request.getBio() != null)
             user.setBio(request.getBio());
         if (request.getProfilePictureUrl() != null)

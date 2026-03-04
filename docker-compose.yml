@@ -98,9 +98,10 @@ services:
       - service-registry
       - message-broker
     environment:
+      - PORT=8082
       - MONGO_URI=mongodb://financier:password@expense-db:27017
       - RABBITMQ_URL=amqp://guest:guest@message-broker:5672/
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka
+      - EUREKA_URL=http://service-registry:8761/eureka
     networks:
       - financier-net
 

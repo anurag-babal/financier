@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -106,10 +107,11 @@ func registerWithEureka(port, eurekaURL string) {
 	instanceName := "expense-service"
 	hostname, _ := os.Hostname()
 
+	iPort, _ := strconv.Atoi(port)
 	eurekaConn := fargo.NewConn(eurekaURL)
 	instance := &fargo.Instance{
 		HostName:         hostname,
-		Port:             8081, // The actual port number
+		Port:             iPort, // The actual port number from environment
 		App:              instanceName,
 		IPAddr:           util.GetOutboundIP().String(),
 		VipAddress:       instanceName,

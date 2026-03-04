@@ -8,6 +8,21 @@ class User {
   final String? currency;
   final double? monthlyBudget;
 
+  String get currencySymbol {
+    switch (currency?.toUpperCase()) {
+      case 'INR':
+        return '₹';
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
+      case 'JPY':
+        return '¥';
+      default:
+        return '\$';
+    }
+  }
+
   User({
     required this.id,
     required this.name,

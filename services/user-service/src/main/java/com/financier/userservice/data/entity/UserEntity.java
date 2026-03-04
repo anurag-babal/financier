@@ -1,6 +1,5 @@
 package com.financier.userservice.data.entity;
 
-import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,18 +21,6 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column
-    private String profilePictureUrl;
-
-    @Column
-    private String bio;
-
-    @Column
-    private String phoneNumber;
-
-    @Column
-    private String currency;
-
-    @Column
-    private BigDecimal monthlyBudget;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfileEntity profile;
 }

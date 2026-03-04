@@ -1,5 +1,6 @@
 package com.financier.userservice.data;
 
+import com.financier.userservice.data.entity.UserProfileEntity;
 import com.financier.userservice.data.entity.UserEntity;
 import com.financier.userservice.domain.model.User;
 
@@ -11,11 +12,16 @@ public class UserMapper {
         entity.setUsername(user.getUsername());
         entity.setEmail(user.getEmail());
         entity.setPassword(user.getPassword());
-        entity.setProfilePictureUrl(user.getProfilePictureUrl());
-        entity.setBio(user.getBio());
-        entity.setPhoneNumber(user.getPhoneNumber());
-        entity.setCurrency(user.getCurrency());
-        entity.setMonthlyBudget(user.getMonthlyBudget());
+
+        UserProfileEntity profile = new UserProfileEntity();
+        profile.setUser(entity);
+        profile.setProfilePictureUrl(user.getProfilePictureUrl());
+        profile.setBio(user.getBio());
+        profile.setPhoneNumber(user.getPhoneNumber());
+        profile.setCurrency(user.getCurrency());
+        profile.setMonthlyBudget(user.getMonthlyBudget());
+
+        entity.setProfile(profile);
         return entity;
     }
 
@@ -26,11 +32,16 @@ public class UserMapper {
         user.setUsername(entity.getUsername());
         user.setEmail(entity.getEmail());
         user.setPassword(entity.getPassword());
-        user.setProfilePictureUrl(entity.getProfilePictureUrl());
-        user.setBio(entity.getBio());
-        user.setPhoneNumber(entity.getPhoneNumber());
-        user.setCurrency(entity.getCurrency());
-        user.setMonthlyBudget(entity.getMonthlyBudget());
+
+        UserProfileEntity profile = entity.getProfile();
+        if (profile != null) {
+            user.setProfilePictureUrl(profile.getProfilePictureUrl());
+            user.setBio(profile.getBio());
+            user.setPhoneNumber(profile.getPhoneNumber());
+            user.setCurrency(profile.getCurrency());
+            user.setMonthlyBudget(profile.getMonthlyBudget());
+        }
+
         return user;
     }
 }

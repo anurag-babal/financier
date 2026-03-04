@@ -9,8 +9,10 @@ class HttpApiService implements MockApiService {
   // Use 10.0.2.2 for Android Emulator, localhost for Web/Browser
   final String _baseUrl = kIsWeb ? 'http://localhost:8080' : 'http://10.0.2.2:8080';
   
-  // A temporary token/user identifier to simulate auth until full login is built
-  final String _authHeader = 'Bearer temp-token';
+  // Static token to persist across navigations and service instantiations
+  static String? _token;
+
+  String get _authHeader => _token != null ? 'Bearer $_token' : '';
 
   @override
   Future<List<Expense>> getExpenses() async {
@@ -24,7 +26,10 @@ class HttpApiService implements MockApiService {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final dynamic decodedData = json.decode(response.body);
+        if (decodedData == null) return [];
+        
+        final List<dynamic> data = decodedData as List<dynamic>;
         return data.map((json) {
           // Map backend fields to frontend Expense model
           // Note: Backend might use _id instead of id, ensure model is robust
@@ -66,7 +71,7 @@ class HttpApiService implements MockApiService {
           email: data['email'] ?? '',
           profilePictureUrl: data['profilePictureUrl'] ?? 'https://i.pravatar.cc/150',
           bio: data['bio'] ?? '',
-          currency: data['currency'] ?? 'USD',
+          currency: data['currency'] ?? 'INR',
           monthlyBudget: data['monthlyBudget'] != null ? (data['monthlyBudget'] as num).toDouble() : null,
         );
       } else {
@@ -140,7 +145,9 @@ class HttpApiService implements MockApiService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return data['token'] ?? ''; // AuthResponse contains token field
+        final token = data['token'] ?? '';
+        _token = token; // Store token for subsequent requests
+        return token;
       } else {
         throw Exception('Login failed: ${response.statusCode}');
       }
