@@ -5,10 +5,8 @@ import (
 	"financier/expense-service/model"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // ExpenseRepository defines the interface for expense data operations.
@@ -22,183 +20,123 @@ type ExpenseRepository interface {
 	Delete(ctx context.Context, id string) (int64, error)
 }
 
-// mongoExpenseRepository is the MongoDB implementation of ExpenseRepository.
-type mongoExpenseRepository struct {
-	collection *mongo.Collection
+// postgresExpenseRepository is the PostgreSQL implementation of ExpenseRepository.
+type postgresExpenseRepository struct {
+	db *gorm.DB
 }
 
-// NewMongoExpenseRepository creates a new repository for expenses.
-func NewMongoExpenseRepository(db *mongo.Database) *mongoExpenseRepository {
-	return &mongoExpenseRepository{
-		collection: db.Collection("expenses"),
+// NewPostgresExpenseRepository creates a new repository for expenses.
+func NewPostgresExpenseRepository(db *gorm.DB) *postgresExpenseRepository {
+	return &postgresExpenseRepository{
+		db: db,
 	}
 }
 
-func (r *mongoExpenseRepository) Create(ctx context.Context, expense *model.Expense) (string, error) {
-	expense.ID = primitive.NewObjectID()
+func (r *postgresExpenseRepository) Create(ctx context.Context, expense *model.Expense) (string, error) {
+	if expense.ID == uuid.Nil {
+		expense.ID = uuid.New()
+	}
 	expense.CreatedAt = time.Now()
 	expense.UpdatedAt = time.Now()
-	_, err := r.collection.InsertOne(ctx, expense)
-	if err != nil {
+	if err := r.db.WithContext(ctx).Create(expense).Error; err != nil {
 		return "", err
 	}
-	return expense.ID.Hex(), nil
+	return expense.ID.String(), nil
 }
 
-func (r *mongoExpenseRepository) GetByID(ctx context.Context, id string) (*model.Expense, error) {
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *postgresExpenseRepository) GetByID(ctx context.Context, id string) (*model.Expense, error) {
 	var expense model.Expense
-	err = r.collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&expense)
-	if err != nil {
+	if err := r.db.WithContext(ctx).First(&expense, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &expense, nil
 }
 
-func (r *mongoExpenseRepository) GetByUserID(ctx context.Context, userID string) ([]*model.Expense, error) {
-	expenses := make([]*model.Expense, 0)
-	cursor, err := r.collection.Find(ctx, bson.M{"userId": userID})
-	if err != nil {
+func (r *postgresExpenseRepository) GetByUserID(ctx context.Context, userID string) ([]*model.Expense, error) {
+	var expenses []*model.Expense
+	if err := r.db.WithContext(ctx).Where("user_id = ?", userID).Find(&expenses).Error; err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
-
-	for cursor.Next(ctx) {
-		var expense model.Expense
-		if err := cursor.Decode(&expense); err != nil {
-			return nil, err
-		}
-		expenses = append(expenses, &expense)
-	}
-
 	return expenses, nil
 }
 
-func (r *mongoExpenseRepository) GetRecent(ctx context.Context, userID string, limit int) ([]*model.Expense, error) {
-	expenses := make([]*model.Expense, 0)
-	opts := options.Find().SetSort(bson.D{{"date", -1}}).SetLimit(int64(limit))
-	cursor, err := r.collection.Find(ctx, bson.M{"userId": userID}, opts)
-	if err != nil {
+func (r *postgresExpenseRepository) GetRecent(ctx context.Context, userID string, limit int) ([]*model.Expense, error) {
+	var expenses []*model.Expense
+	if err := r.db.WithContext(ctx).Where("user_id = ?", userID).Order("date DESC").Limit(limit).Find(&expenses).Error; err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
-
-	for cursor.Next(ctx) {
-		var expense model.Expense
-		if err := cursor.Decode(&expense); err != nil {
-			return nil, err
-		}
-		expenses = append(expenses, &expense)
-	}
-
 	return expenses, nil
 }
 
-func (r *mongoExpenseRepository) GetSummary(ctx context.Context, userID string) (*model.DashboardSummary, error) {
+func (r *postgresExpenseRepository) GetSummary(ctx context.Context, userID string) (*model.DashboardSummary, error) {
 	summary := &model.DashboardSummary{
 		ExpenseByCategory: make(map[string]float64),
 	}
 
-	pipeline := mongo.Pipeline{
-		bson.D{{"$match", bson.D{{"userId", userID}}}},
-		bson.D{{"$group", bson.D{
-			{"_id", "$type"},
-			{"total", bson.D{{"$sum", "$amount"}}},
-		}}},
+	// 1. Get sums by type
+	type Result struct {
+		Type  string  `gorm:"column:type"`
+		Total float64 `gorm:"column:total"`
 	}
-
-	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	var results []Result
+	err := r.db.WithContext(ctx).Model(&model.Expense{}).
+		Select("type, sum(amount) as total").
+		Where("user_id = ?", userID).
+		Group("type").
+		Scan(&results).Error
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
 
-	for cursor.Next(ctx) {
-		var result struct {
-			Type  string  `bson:"_id"`
-			Total float64 `bson:"total"`
-		}
-		if err := cursor.Decode(&result); err != nil {
-			return nil, err
-		}
+	for _, result := range results {
 		if result.Type == "INCOME" {
 			summary.TotalIncome = result.Total
 		} else {
-			// default to EXPENSE
 			summary.TotalExpenses += result.Total
 		}
 	}
-
 	summary.TotalBalance = summary.TotalIncome - summary.TotalExpenses
 
-	// Aggregation for category breakdown of expenses
-	categoryPipeline := mongo.Pipeline{
-		bson.D{{"$match", bson.D{
-			{"userId", userID},
-			{"type", bson.D{{"$ne", "INCOME"}}}, // Treat missing type as EXPENSE
-		}}},
-		bson.D{{"$group", bson.D{
-			{"_id", "$category"},
-			{"total", bson.D{{"$sum", "$amount"}}},
-		}}},
+	// 2. Get category breakdown for expenses
+	type CatResult struct {
+		Category string  `gorm:"column:category"`
+		Total    float64 `gorm:"column:total"`
 	}
-
-	catCursor, err := r.collection.Aggregate(ctx, categoryPipeline)
+	var catResults []CatResult
+	err = r.db.WithContext(ctx).Model(&model.Expense{}).
+		Select("category, sum(amount) as total").
+		Where("user_id = ? AND type != ?", userID, "INCOME").
+		Group("category").
+		Scan(&catResults).Error
 	if err != nil {
 		return nil, err
 	}
-	defer catCursor.Close(ctx)
 
-	for catCursor.Next(ctx) {
-		var result struct {
-			Category string  `bson:"_id"`
-			Total    float64 `bson:"total"`
-		}
-		if err := catCursor.Decode(&result); err != nil {
-			return nil, err
-		}
+	for _, result := range catResults {
 		summary.ExpenseByCategory[result.Category] = result.Total
 	}
 
 	return summary, nil
 }
 
-func (r *mongoExpenseRepository) Update(ctx context.Context, id string, expense *model.Expense) (int64, error) {
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return 0, err
+func (r *postgresExpenseRepository) Update(ctx context.Context, id string, expense *model.Expense) (int64, error) {
+	result := r.db.WithContext(ctx).Model(&model.Expense{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"amount":      expense.Amount,
+		"category":    expense.Category,
+		"description": expense.Description,
+		"date":        expense.Date,
+		"updated_at":  time.Now(),
+	})
+	if result.Error != nil {
+		return 0, result.Error
 	}
-
-	update := bson.M{
-		"$set": bson.M{
-			"amount":      expense.Amount,
-			"category":    expense.Category,
-			"description": expense.Description,
-			"date":        expense.Date,
-			"updatedAt":   time.Now(),
-		},
-	}
-
-	result, err := r.collection.UpdateOne(ctx, bson.M{"_id": objID}, update)
-	if err != nil {
-		return 0, err
-	}
-	return result.ModifiedCount, nil
+	return result.RowsAffected, nil
 }
 
-func (r *mongoExpenseRepository) Delete(ctx context.Context, id string) (int64, error) {
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return 0, err
+func (r *postgresExpenseRepository) Delete(ctx context.Context, id string) (int64, error) {
+	result := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Expense{})
+	if result.Error != nil {
+		return 0, result.Error
 	}
-
-	result, err := r.collection.DeleteOne(ctx, bson.M{"_id": objID})
-	if err != nil {
-		return 0, err
-	}
-	return result.DeletedCount, nil
+	return result.RowsAffected, nil
 }

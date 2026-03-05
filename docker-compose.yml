@@ -57,15 +57,16 @@ services:
       - financier-net
 
   expense-db:
-    image: mongo:5.0
+    image: postgres:14
     container_name: expense-db
     ports:
-      - "${MONGO_PORT}:27017"
+      - "${EXPENSE_POSTGRES_PORT}:5432"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - POSTGRES_USER=${EXPENSE_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${EXPENSE_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${EXPENSE_POSTGRES_DB}
     volumes:
-      - expense-db-data:/data/db
+      - expense-db-data:/var/lib/postgresql/data
     networks:
       - financier-net
 
@@ -101,7 +102,7 @@ services:
       - message-broker
     environment:
       - PORT=${FINANCIER_EXPENSE_SERVICE_PORT}
-      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}
+      - POSTGRES_DSN=host=${EXPENSE_POSTGRES_HOST} user=${EXPENSE_POSTGRES_USER} password=${EXPENSE_POSTGRES_PASSWORD} dbname=${EXPENSE_POSTGRES_DB} port=5432 sslmode=disable
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:5672/
       - EUREKA_URL=http://${EUREKA_HOST}:8761/eureka
       - JWT_SECRET=${JWT_SECRET}

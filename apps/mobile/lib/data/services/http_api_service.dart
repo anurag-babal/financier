@@ -10,8 +10,11 @@ import 'auth_helper.dart';
 
 class HttpApiService implements MockApiService {
   final String _baseUrl = AppConfig.baseUrl;
+  final http.Client _client;
   
   static String? _token;
+
+  HttpApiService({http.Client? client}) : _client = client ?? http.Client();
 
   // Initialize service by loading the saved token
   static Future<void> initialize() async {
@@ -23,7 +26,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<List<Expense>> getExpenses() async {
     try {
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('$_baseUrl/expense-service/api/expenses'),
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +64,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<DashboardSummary> getDashboardSummary() async {
     try {
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('$_baseUrl/expense-service/api/expenses/summary'),
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +86,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<List<Expense>> getRecentTransactions() async {
     try {
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('$_baseUrl/expense-service/api/expenses/recent?limit=5'),
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +122,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<User> getUserProfile() async {
     try {
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('$_baseUrl/user-service/api/v1/users/me'),
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +154,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<void> addExpense(Expense expense) async {
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('$_baseUrl/expense-service/api/expenses'),
         headers: {
           'Content-Type': 'application/json',
@@ -177,7 +180,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<void> register(String name, String email, String password, String currency) async {
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('$_baseUrl/user-service/api/v1/users/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -200,7 +203,8 @@ class HttpApiService implements MockApiService {
   @override
   Future<String> login(String email, String password) async {
     try {
-      final response = await http.post(
+      print('$_baseUrl/user-service/api/v1/users/login');
+      final response = await _client.post(
         Uri.parse('$_baseUrl/user-service/api/v1/users/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -227,7 +231,7 @@ class HttpApiService implements MockApiService {
   @override
   Future<void> updateProfile(User user) async {
     try {
-      final response = await http.put(
+      final response = await _client.put(
         Uri.parse('$_baseUrl/user-service/api/v1/users/me'),
         headers: {
           'Content-Type': 'application/json',

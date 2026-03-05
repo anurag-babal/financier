@@ -12,14 +12,15 @@ import (
 	"time"
 
 	"financier/expense-service/handler"
+	"financier/expense-service/model"
 	"financier/expense-service/repository"
 	"financier/expense-service/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hudl/fargo"
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -34,19 +35,20 @@ func main() {
 	if port == "" {
 		port = "8081"
 	}
-	mongoURI := viper.GetString("MONGO_URI")
+	postgresDSN := viper.GetString("POSTGRES_DSN")
 	eurekaURL := viper.GetString("EUREKA_URL")
 
-	// 2. Connect to MongoDB
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	// 2. Connect to PostgreSQL
+	db, err := gorm.Open(postgres.Open(postgresDSN), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to MongoDB: %v", err)
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
-	defer client.Disconnect(ctx)
-	log.Println("Successfully connected to MongoDB.")
-	db := client.Database("financier_expenses")
+	log.Println("Successfully connected to PostgreSQL.")
+
+	// Auto-migrate schema
+	if err := db.AutoMigrate(&model.Expense{}); err != nil {
+		log.Fatalf("Failed to migrate database schema: %v", err)
+	}
 
 	// 3. Register with Eureka
 	if eurekaURL != "" {
@@ -55,9 +57,8 @@ func main() {
 		log.Println("EUREKA_URL not set, skipping service registration.")
 	}
 
-
 	// 4. Set up Repository and Handler
-	expenseRepo := repository.NewMongoExpenseRepository(db)
+	expenseRepo := repository.NewPostgresExpenseRepository(db)
 	expenseHandler := handler.NewExpenseHandler(expenseRepo)
 
 	// 5. Set up Gin Router

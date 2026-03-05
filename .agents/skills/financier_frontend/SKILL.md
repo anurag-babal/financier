@@ -25,3 +25,16 @@ description: UI/UX standards, typography, and data resiliency patterns for the F
 *   **Currency Mapping**: Use the `currencySymbol` getter in `UserModel` to map currency codes to their native glyphs.
 *   **Color-Coded Feedback**: Use meaningful semantic colors (e.g., Green for income, Red for expenses) to provide instant visual feedback on transaction types.
 
+## 5. Testing Guidelines
+
+### Dependency Injection for Services
+*   **Injectable Clients**: Refactor singleton-style services (like `HttpApiService`) to accept an optional `http.Client` in the constructor. This allows for mocking the network layer using `http/testing`'s `MockClient` without making real network calls.
+
+### Mocking Platform Channels
+*   **SharedPreferences**: When testing classes that use `AuthHelper` or `SharedPreferences`, always initialize the mock plugin values in the `setUp` block:
+    ```dart
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+    ```
+*   **Testing State**: Use `package:flutter_test` and `Group` blocks to organize service logic tests separately from UI widget tests.
