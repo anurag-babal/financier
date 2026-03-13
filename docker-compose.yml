@@ -34,8 +34,8 @@ services:
     image: rabbitmq:3.9-management
     container_name: message-broker
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     networks:
       - financier-net
 
