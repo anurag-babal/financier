@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../models/expense_model.dart';
+import '../models/transaction_model.dart';
 import '../models/user_model.dart';
 import '../models/dashboard_summary_model.dart';
 import '../../core/app_config.dart';
@@ -24,10 +24,10 @@ class HttpApiService implements MockApiService {
   String get _authHeader => _token != null ? 'Bearer $_token' : '';
 
   @override
-  Future<List<Expense>> getExpenses() async {
+  Future<List<Transaction>> getTransactions() async {
     try {
       final response = await _client.get(
-        Uri.parse('$_baseUrl/expense-service/api/expenses'),
+        Uri.parse('$_baseUrl/transaction-service/api/transactions'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': _authHeader,
@@ -40,9 +40,9 @@ class HttpApiService implements MockApiService {
         
         final List<dynamic> data = decodedData as List<dynamic>;
         return data.map((json) {
-          // Map backend fields to frontend Expense model
+          // Map backend fields to frontend Transaction model
           // Note: Backend might use _id instead of id, ensure model is robust
-          return Expense(
+          return Transaction(
             id: json['_id'] ?? json['id'] ?? '',
             userId: json['user_id'] ?? json['userId'] ?? '',
             type: json['type'] ?? 'EXPENSE',
@@ -53,10 +53,10 @@ class HttpApiService implements MockApiService {
           );
         }).toList();
       } else {
-        throw Exception('Failed to load expenses: ${response.statusCode}');
+        throw Exception('Failed to load transactions: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching expenses: $e');
+      print('Error fetching transactions: $e');
       throw Exception('Failed to connect to backend: $e');
     }
   }
@@ -65,7 +65,7 @@ class HttpApiService implements MockApiService {
   Future<DashboardSummary> getDashboardSummary() async {
     try {
       final response = await _client.get(
-        Uri.parse('$_baseUrl/expense-service/api/expenses/summary'),
+        Uri.parse('$_baseUrl/transaction-service/api/transactions/summary'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': _authHeader,
@@ -84,10 +84,10 @@ class HttpApiService implements MockApiService {
   }
 
   @override
-  Future<List<Expense>> getRecentTransactions() async {
+  Future<List<Transaction>> getRecentTransactions() async {
     try {
       final response = await _client.get(
-        Uri.parse('$_baseUrl/expense-service/api/expenses/recent?limit=5'),
+        Uri.parse('$_baseUrl/transaction-service/api/transactions/recent?limit=5'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': _authHeader,
@@ -100,7 +100,7 @@ class HttpApiService implements MockApiService {
         
         final List<dynamic> data = decodedData as List<dynamic>;
         return data.map((json) {
-          return Expense(
+          return Transaction(
             id: json['_id'] ?? json['id'] ?? '',
             userId: json['user_id'] ?? json['userId'] ?? '',
             type: json['type'] ?? 'EXPENSE',
@@ -155,7 +155,7 @@ class HttpApiService implements MockApiService {
   Future<void> addExpense(Expense expense) async {
     try {
       final response = await _client.post(
-        Uri.parse('$_baseUrl/expense-service/api/expenses'),
+        Uri.parse('$_baseUrl/transaction-service/api/expenses'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': _authHeader,

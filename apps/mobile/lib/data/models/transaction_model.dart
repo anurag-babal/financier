@@ -1,4 +1,4 @@
-class Expense {
+class Transaction {
   final String id;
   final String userId;
   final String type;
@@ -7,7 +7,7 @@ class Expense {
   final String description;
   final DateTime date;
 
-  Expense({
+  Transaction({
     required this.id,
     required this.userId,
     this.type = 'EXPENSE',
@@ -17,8 +17,8 @@ class Expense {
     required this.date,
   });
 
-  factory Expense.fromJson(Map<String, dynamic> json) {
-    return Expense(
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    return Transaction(
       id: json['id'],
       userId: json['userId'],
       type: json['type'] ?? 'EXPENSE',

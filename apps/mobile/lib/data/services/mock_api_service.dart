@@ -1,10 +1,10 @@
-import '../models/expense_model.dart';
+import '../models/transaction_model.dart';
 import '../models/user_model.dart';
 import '../models/dashboard_summary_model.dart';
 
 class MockApiService {
-  final List<Expense> _mockExpenses = [
-    Expense(
+  final List<Transaction> _mockTransactions = [
+    Transaction(
       id: '1',
       userId: 'user123',
       amount: 45.50,
@@ -12,7 +12,7 @@ class MockApiService {
       description: 'Lunch at Cafe',
       date: DateTime.now().subtract(const Duration(hours: 2)),
     ),
-    Expense(
+    Transaction(
       id: '2',
       userId: 'user123',
       amount: 20.00,
@@ -20,7 +20,7 @@ class MockApiService {
       description: 'Taxi to office',
       date: DateTime.now().subtract(const Duration(hours: 5)),
     ),
-    Expense(
+    Transaction(
       id: '3',
       userId: 'user123',
       amount: 150.00,
@@ -28,7 +28,7 @@ class MockApiService {
       description: 'Groceries',
       date: DateTime.now().subtract(const Duration(days: 1)),
     ),
-    Expense(
+    Transaction(
       id: '4',
       userId: 'user123',
       amount: 12.99,
@@ -47,9 +47,9 @@ class MockApiService {
     bio: 'Finance enthusiast and software developer.',
   );
 
-  Future<List<Expense>> getExpenses() async {
+  Future<List<Transaction>> getTransactions() async {
     await Future.delayed(const Duration(milliseconds: 800)); // Simulate network delay
-    return List.from(_mockExpenses);
+    return List.from(_mockTransactions);
   }
 
   Future<User> getUserProfile() async {
@@ -57,9 +57,9 @@ class MockApiService {
     return _mockUser;
   }
 
-  Future<void> addExpense(Expense expense) async {
+  Future<void> addTransaction(Transaction transaction) async {
     await Future.delayed(const Duration(milliseconds: 1000));
-    _mockExpenses.insert(0, expense);
+    _mockTransactions.insert(0, transaction);
   }
 
   Future<void> register(String name, String email, String password, String currency) async {
@@ -85,8 +85,8 @@ class MockApiService {
     );
   }
 
-  Future<List<Expense>> getRecentTransactions() async {
+  Future<List<Transaction>> getRecentTransactions() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return List.from(_mockExpenses);
+    return List.from(_mockTransactions);
   }
 }

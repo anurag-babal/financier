@@ -11,14 +11,14 @@ The Financier project is a personal finance management tool used to track daily 
 
 The backend is located in the `/services/` directory and is broken down into several microservices:
 
-*   **`expense-service`**: 
-    *   **Stack**: Go (Golang), Gin web framework, MongoDB.
-    *   **Architecture**: Uses a handler-repository pattern (`handler/`, `repository/`, `model/`).
-    *   **Key Models**: `Expense` (fields like `Amount`, `Category`, `Description`, `Date`, etc.). Uses `primitive.ObjectID`.
+*   **`transaction-service`**: 
+    *   **Stack**: Java Spring Boot 3.5, Hexagonal Architecture.
+    *   **Key Models**: `Transaction` (Unified Ledger for Income/Expense).
+    *   **Architecture**: Uses `domain`, `application`, `interface_`, and `data` packages.
 *   **`user-service`**:
-    *   **Stack**: Java (likely Spring Boot based on `pom.xml` and `mvnw`).
-    *   **Key Models**: `User` (fields like `email`, `username`, `profilePictureUrl`, etc.). Uses `Long` for IDs.
-*   **Other Services**: `budget-service`, `notification-service`, `reporting-service` (these exist but are currently uninspected).
+    *   **Stack**: Java Spring Boot, Hexagonal Architecture.
+    *   **Role**: Identity management and user profiles.
+*   **Other Services**: `budget-service`, `notification-service`, `reporting-service`.
 
 ### Infrastructure Component
 The project utilizes a microservices infrastructure layer in the `/infrastructure/` directory:

@@ -13,18 +13,22 @@ description: Specific technical details for the Financier microservices, Eureka 
     *   **User ID Extraction**: **CRITICAL**: Use `String.valueOf(claims.get("id"))` to extract the ID. Claims may be returned as `Integer` or `Long` depending on the token provider; casting to a specific type can cause `ClassCastException`.
     *   **Header Injection**: Injects the `X-User-Id` header for down-stream microservices.
 
-## 2. Go-based Microservices
-*   **`expense-service`**: 
-    *   **Stack**: Go (Golang), Gin web framework, PostgreSQL (Migrated from MongoDB).
-*   **Eureka Registration**: In `docker-compose.yml`, use `EUREKA_URL=http://service-registry:8761/eureka`.
-*   **Port Management**: Microservices must dynamically register their internal listening port (e.g., `8082`) with Eureka.
-*   **Headers**: Services like `expense-service` expect the `X-User-Id` header for row-level authorization.
+## 2. Microservices Architecture
+*   **Hexagonal Architecture (Ports and Adapters)**: Both `user-service` and `transaction-service` follow this pattern to decouple business logic from infrastructure.
+    *   **Domain Layer**: Contains core POJO models and repository interfaces (Ports). No framework-specific annotations (like JPA) should be in this layer.
+    *   **Application Layer**: Orchestrates use cases. Contains service interfaces (Ports), their implementations, and DTOs.
+    *   **Interface Layer**: Driving Adapters (e.g., REST Controllers).
+    *   **Data Layer**: Driven Adapters (e.g., JPA Entities, Persistence Adapters, Mappers).
+*   **`user-service`**: Java Spring Boot, PostgreSQL. Handles auth and user management.
+*   **`transaction-service`**: Java Spring Boot 3.5, Hibernate/JPA, PostgreSQL.
+    *   **Unified Ledger Pattern**: Instead of separate tables for Incomes and Expenses, a single `transactions` table with a `type` field ("INCOME" or "EXPENSE") is used.
+*   **Eureka Registration**: Use `EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` for service discovery configuration.
 
 ## 3. Database Management
 *   **Schema Sync**: If backend entity relationships change (e.g., the User-Profile normalization), perform a clean reset using `docker-compose down -v`.
 *   **Normalization**: Personal user details (bio, currency, budget) are stored in `user_profiles` to separate them from core authentication data in the `users` table.
-*   **Unified Ledger Pattern**: Instead of separate collections for Incomes and Expenses, use a single `transactions` collection with a `type` field ("INCOME" or "EXPENSE"). This simplifies total balance calculations and "Recent Transactions" queries.
-*   **MongoDB Aggregations**: Use database-level aggregations (`$group`, `$match`, `$sum`) to provide a pre-calculated `/summary` endpoint. This is more efficient for mobile clients than fetching raw data and calculating on the device.
+*   **Unified Ledger Pattern**: Instead of separate tables/collections for Incomes and Expenses, use a single `transactions` table with a `type` field ("INCOME" or "EXPENSE"). This simplifies total balance calculations and "Recent Transactions" queries.
+*   **Aggregations**: Use database-level aggregations or stream-based processing in the service layer (as done in `transaction-service`) to provide a pre-calculated `/summary` endpoint.
 
 ## 4. Testing Guidelines
 

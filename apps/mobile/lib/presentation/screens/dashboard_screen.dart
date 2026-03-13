@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/models/expense_model.dart';
+import '../../data/models/transaction_model.dart';
 import '../../data/models/dashboard_summary_model.dart';
 import '../../data/services/http_api_service.dart';
 import '../../core/theme.dart';
@@ -21,7 +21,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final HttpApiService _apiService = HttpApiService();
-  List<Expense> _recentTransactions = [];
+  List<Transaction> _recentTransactions = [];
   DashboardSummary? _summary;
   User? _user;
   bool _isLoading = true;

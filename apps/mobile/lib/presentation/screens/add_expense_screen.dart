@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
-import '../../data/models/expense_model.dart';
+import '../../data/models/transaction_model.dart';
 import '../../data/services/http_api_service.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -27,7 +27,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isSaving = true);
       
-      final newExpense = Expense(
+      final newExpense = Transaction(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         userId: 'user123',
         type: _selectedType,

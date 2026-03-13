@@ -56,17 +56,17 @@ services:
     networks:
       - financier-net
 
-  expense-db:
+  transaction-db:
     image: postgres:14
-    container_name: expense-db
+    container_name: transaction-db
     ports:
-      - "${EXPENSE_POSTGRES_PORT}:5432"
+      - "${TRANSACTION_POSTGRES_PORT}:5432"
     environment:
-      - POSTGRES_USER=${EXPENSE_POSTGRES_USER}
-      - POSTGRES_PASSWORD=${EXPENSE_POSTGRES_PASSWORD}
-      - POSTGRES_DB=${EXPENSE_POSTGRES_DB}
+      - POSTGRES_USER=${TRANSACTION_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TRANSACTION_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${TRANSACTION_POSTGRES_DB}
     volumes:
-      - expense-db-data:/var/lib/postgresql/data
+      - transaction-db-data:/var/lib/postgresql/data
     networks:
       - financier-net
 
@@ -90,21 +90,23 @@ services:
     networks:
       - financier-net
 
-  expense-service:
+  transaction-service:
     build:
-      context: ./services/expense-service
-    container_name: expense-service
+      context: ./services/transaction-service
+    container_name: transaction-service
     ports:
-      - "${FINANCIER_EXPENSE_SERVICE_PORT}:8082"
+      - "${FINANCIER_TRANSACTION_SERVICE_PORT}:8082"
     depends_on:
-      - expense-db
+      - transaction-db
       - service-registry
       - message-broker
     environment:
-      - PORT=${FINANCIER_EXPENSE_SERVICE_PORT}
-      - POSTGRES_DSN=host=${EXPENSE_POSTGRES_HOST} user=${EXPENSE_POSTGRES_USER} password=${EXPENSE_POSTGRES_PASSWORD} dbname=${EXPENSE_POSTGRES_DB} port=5432 sslmode=disable
+      - PORT=${FINANCIER_TRANSACTION_SERVICE_PORT}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${TRANSACTION_POSTGRES_HOST}:${TRANSACTION_POSTGRES_PORT}/${TRANSACTION_POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${TRANSACTION_POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${TRANSACTION_POSTGRES_PASSWORD}
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:5672/
-      - EUREKA_URL=http://${EUREKA_HOST}:8761/eureka
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://${EUREKA_HOST}:8761/eureka
       - JWT_SECRET=${JWT_SECRET}
     networks:
       - financier-net
@@ -130,7 +132,7 @@ services:
 #----------------------------------------------------#
 volumes:
   user-db-data:
-  expense-db-data:
+  transaction-db-data:
 
 networks:
   financier-net:
